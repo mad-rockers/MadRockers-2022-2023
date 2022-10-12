@@ -82,7 +82,7 @@ task main()
 			}
 			else {
 				motor[rightDrive] = 0;
-			}
+			}//you
 		}
 	}
 }
