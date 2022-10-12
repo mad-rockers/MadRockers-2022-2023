@@ -82,7 +82,43 @@ task main()
 			}
 			else {
 				motor[rightDrive] = 0;
-			}//you
+			}
+		}
+		//left dropper
+		if(vexRT[Btn7L] == 1)
+		{
+			motor[leftDropper] = 90;
+		}
+		else
+	  {
+	  	motor[leftDropper] = -90;
+	  }
+	  //right dropper
+	  	if(vexRT[Btn7R] == 1)
+		{
+			motor[rightDropper] = 90;
+		}
+		else
+	  {
+	  	motor[rightDropper] = -90;
+	  }
+	  //Lever
+	  if(vexRT[Btn8R] == 1)
+		{
+			motor[lever] = 90;
+		}
+		else
+	  {
+	  	motor[lever] = -90;
+	  }
+	  //elevator
+	  if(vexRT[Btn8U] == 1)
+		{
+			motor[elevator] = 10;
+		}
+		 if(vexRT[Btn8D] == 1)
+		{
+			motor[elevator] = -10;
 		}
 	}
 }
