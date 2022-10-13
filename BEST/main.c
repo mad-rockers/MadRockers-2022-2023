@@ -83,25 +83,23 @@ task main()
 			else {
 				motor[rightDrive] = 0;
 			}
-		}
-		//left dropper
-		if(vexRT[Btn7L] == 1)
-		{
-			motor[leftDropper] = 90;
-		}
-		else
-	  {
-	  	motor[leftDropper] = -90;
-	  }
-	  //right dropper
-	  	if(vexRT[Btn7R] == 1)
+	}
+	  //right dropper an left dropper
+	  if(vexRT[Btn7R] == 1)
 		{
 			motor[rightDropper] = 90;
+			motor[leftDropper] = 90;
 		}
-		else
-	  {
+		else if(vexRT[Btn7L] == 1)
+	  	motor[leftDropper] = -90;
 	  	motor[rightDropper] = -90;
 	  }
+	  else
+	  {
+	  	motor[leftDropper] = 0;
+	  	motor[rightDropper] = 0;
+	  }
+	  /*
 	  //Lever
 	  if(vexRT[Btn8R] == 1)
 		{
@@ -111,14 +109,19 @@ task main()
 	  {
 	  	motor[lever] = -90;
 	  }
+	  */
 	  //elevator
 	  if(vexRT[Btn8U] == 1)
 		{
 			motor[elevator] = 10;
 		}
-		 if(vexRT[Btn8D] == 1)
+		else if(vexRT[Btn8D] == 1)
 		{
 			motor[elevator] = -10;
+		}
+		else
+		{
+			motor[elevator] = 0;
 		}
 	}
 }
