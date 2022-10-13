@@ -1,6 +1,6 @@
 #pragma config(UART_Usage, UART1, uartUserControl, baudRate1200, IOPins, None, None)
-#pragma config(Motor,  port2,           leftDrive,     tmotorServoContinuousRotation, openLoop)
-#pragma config(Motor,  port3,           rightDrive,    tmotorServoContinuousRotation, openLoop, reversed)
+#pragma config(Motor,  port2,           leftDrive,     tmotorServoContinuousRotation, openLoop, reversed)
+#pragma config(Motor,  port3,           rightDrive,    tmotorServoContinuousRotation, openLoop)
 #pragma config(Motor,  port4,           elevator,      tmotorServoContinuousRotation, openLoop)
 #pragma config(Motor,  port5,           lever,         tmotorServoStandard, openLoop)
 #pragma config(Motor,  port6,           leftDropper,   tmotorServoStandard, openLoop)
@@ -63,65 +63,267 @@ void setBaud( const TUARTs nPort, int baudRate ) {
     uart->BRR = (uint16_t)tmpreg;
 }
 
+//Trackers
 bool reversed = false;
+bool driving = true;
+
+//Lever Values
+int forward_half = 0;
+int forward_full = 0;
+int neutral = 0;
+int back_half = 0;
+int back_full = 0;
+
+//IR Codes
+int drive = 0x5A;
+int rotate = 0x3C;
+int lift = 0x33;
+int drive_low = 0x99;
+int drive_med = 0xA5;
+int drive_high = 0xC3;
+int rotate_low = 0x69;
+int rotate_med = 0x96;
+int rotate_high = 0x0F;
 
 task main()
 {
 	setBaud(UART1, 600);
-	//sendChar(UART1, your_value);
 	while(true) {
-		if (!reversed) {
-			if(abs(vexRT[Ch3]) > 20) {
-				motor[leftDrive] = vexRT[Ch3];
+		//Robot control
+		if(driving) {
+			//Driving
+			if(!reversed) {
+				if(abs(vexRT[Ch3]) > 20) {
+					motor[leftDrive] = vexRT[Ch3];
+				}
+				else {
+					motor[leftDrive] = 0;
+				}
+				if(abs(vexRT[Ch2]) > 20) {
+					motor[rightDrive] = vexRT[Ch2];
+				}
+				else {
+					motor[rightDrive] = 0;
+				}
 			}
 			else {
-				motor[leftDrive] = 0;
+				if(abs(vexRT[Ch3]) > 20) {
+					motor[rightDrive] = -vexRT[Ch3];
+				}
+				else {
+					motor[rightDrive] = 0;
+				}
+				if(abs(vexRT[Ch2]) > 20) {
+					motor[leftDrive] = -vexRT[Ch2];
+				}
+				else {
+					motor[leftDrive] = 0;
+				}
 			}
+			if(vexRT[Btn8D] == 1) {
+				while (vexRT[Btn8D] == 1) {}
+				reversed = !reversed;
+			}
+
+		  //Wheel Droppers
+		  if(vexRT[Btn7R] == 1)
+			{
+				motor[rightDropper] = 100;
+				motor[leftDropper] = 100;
+			}
+			else if(vexRT[Btn7L] == 1)
+			{
+		  	motor[leftDropper] = -100;
+		  	motor[rightDropper] = -100;
+		  }
+		  else
+		  {
+		  	motor[leftDropper] = 0;
+		  	motor[rightDropper] = 0;
+		  }
+
+		  //Elevator
+		  if(vexRT[Btn7U] == 1)
+			{
+				motor[elevator] = 100;
+			}
+			else if(vexRT[Btn7D] == 1)
+			{
+				motor[elevator] = -100;
+			}
+			else
+			{
+				motor[elevator] = 0;
+			}
+
+		  //IR Stick
+			if(vexRT[Btn8U] == 1)
+			{
+				while(vexRT[Btn8U] == 1) {}
+				motor[IR] = 45;
+				driving = false;
+			}
+		}
+
+		//Squeaky Control
+		else {
+			//Driving
 			if(abs(vexRT[Ch2]) > 20) {
-				motor[rightDrive] = vexRT[Ch2];
+				if(vexRT[Ch2] < -109) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_high);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch2] < -91) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_med);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch2] < -73) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_low);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch2] < -55) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_high);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch2] < -37) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_med);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch2] < -20) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_low);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch2] < 37) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_low);
+					motor[lever] = forward_half;
+				}
+				else if(vexRT[Ch2] < 55) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_med);
+					motor[lever] = forward_half;
+				}
+				else if(vexRT[Ch2] < 73) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_high);
+					motor[lever] = forward_half;
+				}
+				else if(vexRT[Ch2] < 91) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_low);
+					motor[lever] = forward_full;
+				}
+				else if(vexRT[Ch2] < 109) {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_med);
+					motor[lever] = forward_full;
+				}
+				else {
+					sendChar(UART1, drive);
+					sendChar(UART1, drive_high);
+					motor[lever] = forward_full;
+				}
 			}
+
+			//Rotattion
+			else if(abs(vexRT[Ch4]) > 20) {
+				if(vexRT[Ch2] < -109) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_high);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch4] < -91) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_med);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch4] < -73) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_low);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch4] < -55) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_high);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < -37) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_med);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < -20) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_low);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < 37) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_low);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < 55) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_med);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < 73) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_high);
+					motor[lever] = back_half;
+				}
+				else if(vexRT[Ch4] < 91) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_low);
+					motor[lever] = back_full;
+				}
+				else if(vexRT[Ch4] < 109) {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_med);
+					motor[lever] = back_full;
+				}
+				else {
+					sendChar(UART1, rotate);
+					sendChar(UART1, rotate_high);
+					motor[lever] = back_full;
+				}
+			}
+
+			//Lift
+			else if(abs(vexRT[Btn5U]) == 1) {
+				sendChar(UART1, lift);
+				motor[lever] = back_half;
+			}
+			else if(abs(vexRT[Btn5D]) == 1) {
+				sendChar(UART1, lift);
+				motor[lever] = back_full;
+			}
+			else if(abs(vexRT[Btn6U]) == 1) {
+				sendChar(UART1, lift);
+				motor[lever] = forward_half;
+			}
+			else if(abs(vexRT[Btn6D]) == 1) {
+				sendChar(UART1, lift);
+				motor[lever] = forward_full;
+			}
+
 			else {
-				motor[rightDrive] = 0;
+				motor[lever] = neutral;
 			}
-	}
-	  //right dropper an left dropper
-	  if(vexRT[Btn7R] == 1)
-		{
-			motor[rightDropper] = 90;
-			motor[leftDropper] = 90;
-		}
-		else if(vexRT[Btn7L] == 1)
-	  	motor[leftDropper] = -90;
-	  	motor[rightDropper] = -90;
-	  }
-	  else
-	  {
-	  	motor[leftDropper] = 0;
-	  	motor[rightDropper] = 0;
-	  }
-	  /*
-	  //Lever
-	  if(vexRT[Btn8R] == 1)
-		{
-			motor[lever] = 90;
-		}
-		else
-	  {
-	  	motor[lever] = -90;
-	  }
-	  */
-	  //elevator
-	  if(vexRT[Btn8U] == 1)
-		{
-			motor[elevator] = 10;
-		}
-		else if(vexRT[Btn8D] == 1)
-		{
-			motor[elevator] = -10;
-		}
-		else
-		{
-			motor[elevator] = 0;
+
+			//IR Stick
+			if(vexRT[Btn8U] == 1)
+			{
+				while(vexRT[Btn8U] == 1) {}
+				motor[IR] = -127;
+				driving = true;
+			}
 		}
 	}
 }
