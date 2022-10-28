@@ -176,7 +176,7 @@ task main()
 
 			/*//Squeaky Mode
 			if(vexRT[Btn8R] == 1) {
-				while(vexRT[Btn8U] == 1) {}
+				while(vexRT[Btn8R] == 1) {}
 				driving = true;
 			}*/
 		}
@@ -197,7 +197,7 @@ task main()
 				}
 			}
 
-			//Rotattion
+			//Rotation
 			if(abs(vexRT[Ch4]) > 20) {
 				sendChar(UART1, rotate);
 				if(vexRT[Ch4] < 0) {
@@ -221,7 +221,7 @@ task main()
 				motor[lever] = neutral;
 			}
 
-			//Squeaky Mode
+			//Driving Mode
 			if(vexRT[Btn8R] == 1) {
 				while(vexRT[Btn8R] == 1) {}
 				driving = false;
