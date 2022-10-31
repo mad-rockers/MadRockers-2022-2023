@@ -89,7 +89,6 @@ int rotate_high = 0x0F;
 task main()
 {
 	setBaud(UART1, 600);
-	motor[IR] = 45;
 	while(true) {
 		//Robot control
 		if(driving) {
@@ -129,10 +128,10 @@ task main()
 
 		  //Wheel Droppers
 		  if(vexRT[Btn7R] == 1) {
-				motor[dropper] = 100;
+				motor[dropper] = 85;
 			}
 			else if(vexRT[Btn7L] == 1) {
-		  	motor[dropper] = -100;
+		  	motor[dropper] = -85;
 		  }
 		  else {
 		  	motor[dropper] = 0;
@@ -153,35 +152,22 @@ task main()
 			if(vexRT[Btn8U] == 1) {
 				while(vexRT[Btn8U] == 1) {}
 				if(down) {
-					motor[IR] = -127;
+					motor[IR] = 90;
 				}
 				else {
-					motor[IR] = 45;
+					motor[IR] = -90;
 				}
 				down = !down;
 			}
 
-			if(vexRT[Btn8L] == 1) {
-				motor[lever1] = 65;
-				motor[lever2] = 65;
-			}
-			else if(vexRT[Btn8R] == 1) {
-				motor[lever1] = -65;
-				motor[lever2] = -65;
-			}
-			else {
-				motor[lever1] = 0;
-				motor[lever2] = 0;
-			}
-
-			/*//Squeaky Mode
+			//Squeaky Mode
 			if(vexRT[Btn8R] == 1) {
 				while(vexRT[Btn8R] == 1) {}
-				driving = true;
-			}*/
+				driving = false;
+			}
 		}
 
-		/*//Squeaky Control
+		//Squeaky Control
 		else {
 			sendChar(UART1, drive_high);
 			sendChar(UART1, rotate_high);
@@ -190,42 +176,49 @@ task main()
 			if(abs(vexRT[Ch2]) > 20) {
 				sendChar(UART1, drive);
 				if(vexRT[Ch2] < 0) {
-					motor[lever] = back_full;
+					motor[lever1] = back_full;
+					motor[lever2] = back_full;
 				}
 				else {
-					motor[lever] = forward_full;
+					motor[lever1] = forward_full;
+					motor[lever2] = forward_full;
 				}
 			}
 
 			//Rotation
-			if(abs(vexRT[Ch4]) > 20) {
+			else if(abs(vexRT[Ch4]) > 20) {
 				sendChar(UART1, rotate);
 				if(vexRT[Ch4] < 0) {
-					motor[lever] = back_full;
+					motor[lever1] = back_full;
+					motor[lever2] = back_full;
 				}
 				else {
-					motor[lever] = forward_full;
+					motor[lever1] = forward_full;
+					motor[lever2] = forward_full;
 				}
 			}
 
 			//Lift
-			if(abs(vexRT[Btn5U]) == 1) {
+			else if(abs(vexRT[Btn5U]) == 1) {
 				sendChar(UART1, lift);
-				motor[lever] = back_full;
+				motor[lever1] = back_full;
+				motor[lever2] = back_full;
 			}
 			else if(abs(vexRT[Btn6U]) == 1) {
 				sendChar(UART1, lift);
-				motor[lever] = forward_full;
+				motor[lever1] = forward_full;
+				motor[lever2] = forward_full;
 			}
 			else {
-				motor[lever] = neutral;
+				motor[lever1] = neutral;
+				motor[lever2] = neutral;
 			}
 
 			//Driving Mode
 			if(vexRT[Btn8R] == 1) {
 				while(vexRT[Btn8R] == 1) {}
-				driving = false;
+				driving = true;
 			}
-		}*/
+		}
 	}
 }
