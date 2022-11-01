@@ -169,8 +169,8 @@ task main()
 
 		//Squeaky Control
 		else {
-			sendChar(UART1, drive_high);
-			sendChar(UART1, rotate_high);
+			/*sendChar(UART1, drive_high);
+			sendChar(UART1, rotate_high);*/
 
 			//Driving
 			if(abs(vexRT[Ch2]) > 20) {
@@ -199,12 +199,12 @@ task main()
 			}
 
 			//Lift
-			else if(abs(vexRT[Btn5U]) == 1) {
+			else if(vexRT[Btn5U] == 1) {
 				sendChar(UART1, lift);
 				motor[lever1] = back_full;
 				motor[lever2] = back_full;
 			}
-			else if(abs(vexRT[Btn6U]) == 1) {
+			else if(vexRT[Btn6U] == 1) {
 				sendChar(UART1, lift);
 				motor[lever1] = forward_full;
 				motor[lever2] = forward_full;
