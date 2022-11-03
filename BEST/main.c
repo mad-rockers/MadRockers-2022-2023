@@ -70,15 +70,12 @@ bool driving = true;
 
 //Lever Values
 int forward_half = 0;
-int forward_full = 65;
+int forward_full = 127;
 int neutral = 0;
 int back_half = 0;
-int back_full = -65;
+int back_full = -127;
 
 //IR Codes
-int drive = 0x5A;
-int rotate = 0x3C;
-int lift = 0x33;
 int drive_low = 0x99;
 int drive_med = 0xA5;
 int drive_high = 0xC3;
@@ -86,9 +83,20 @@ int rotate_low = 0x69;
 int rotate_med = 0x96;
 int rotate_high = 0x0F;
 
+//Practice Settings
+int drive = 0x5A;
+int rotate = 0x3C;
+int lift = 0x33;
+
+//Competition Settings
+int drive = 0x33;
+int rotate = 0x5A;
+int lift = 0x3C;
+
 task main()
 {
 	setBaud(UART1, 600);
+	motor[IR] = 100;
 	while(true) {
 		//Robot control
 		if(driving) {
@@ -152,10 +160,10 @@ task main()
 			if(vexRT[Btn8U] == 1) {
 				while(vexRT[Btn8U] == 1) {}
 				if(down) {
-					motor[IR] = 90;
+					motor[IR] = 100;
 				}
 				else {
-					motor[IR] = -90;
+					motor[IR] = -65;
 				}
 				down = !down;
 			}
@@ -169,12 +177,10 @@ task main()
 
 		//Squeaky Control
 		else {
-			/*sendChar(UART1, drive_high);
-			sendChar(UART1, rotate_high);*/
-
 			//Driving
 			if(abs(vexRT[Ch2]) > 20) {
 				sendChar(UART1, drive);
+				wait(0.2);
 				if(vexRT[Ch2] < 0) {
 					motor[lever1] = back_full;
 					motor[lever2] = back_full;
@@ -188,6 +194,7 @@ task main()
 			//Rotation
 			else if(abs(vexRT[Ch4]) > 20) {
 				sendChar(UART1, rotate);
+				wait(0.2);
 				if(vexRT[Ch4] < 0) {
 					motor[lever1] = back_full;
 					motor[lever2] = back_full;
@@ -201,17 +208,22 @@ task main()
 			//Lift
 			else if(vexRT[Btn5U] == 1) {
 				sendChar(UART1, lift);
+				wait(0.2);
 				motor[lever1] = back_full;
 				motor[lever2] = back_full;
 			}
 			else if(vexRT[Btn6U] == 1) {
 				sendChar(UART1, lift);
+				wait(0.2);
 				motor[lever1] = forward_full;
 				motor[lever2] = forward_full;
 			}
 			else {
 				motor[lever1] = neutral;
 				motor[lever2] = neutral;
+				sendChar(UART1, drive_high);
+				sendChar(UART1, rotate_high);
+				wait(0.2);
 			}
 
 			//Driving Mode
