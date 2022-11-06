@@ -83,10 +83,10 @@ int rotate_low = 0x69;
 int rotate_med = 0x96;
 int rotate_high = 0x0F;
 
-//Practice Settings
+/*//Practice Settings
 int drive = 0x5A;
 int rotate = 0x3C;
-int lift = 0x33;
+int lift = 0x33;*/
 
 //Competition Settings
 int drive = 0x33;
@@ -96,7 +96,7 @@ int lift = 0x3C;
 task main()
 {
 	setBaud(UART1, 600);
-	motor[IR] = 100;
+	motor[IR] = 127;
 	while(true) {
 		//Robot control
 		if(driving) {
@@ -160,10 +160,10 @@ task main()
 			if(vexRT[Btn8U] == 1) {
 				while(vexRT[Btn8U] == 1) {}
 				if(down) {
-					motor[IR] = 100;
+					motor[IR] = 127;
 				}
 				else {
-					motor[IR] = -65;
+					motor[IR] = -50;
 				}
 				down = !down;
 			}
@@ -181,28 +181,16 @@ task main()
 			if(abs(vexRT[Ch2]) > 20) {
 				sendChar(UART1, drive);
 				wait(0.2);
-				if(vexRT[Ch2] < 0) {
-					motor[lever1] = back_full;
-					motor[lever2] = back_full;
-				}
-				else {
-					motor[lever1] = forward_full;
-					motor[lever2] = forward_full;
-				}
+				motor[lever1] = vexRT[Ch2];
+				motor[lever2] = vexRT[Ch2];
 			}
 
 			//Rotation
 			else if(abs(vexRT[Ch4]) > 20) {
 				sendChar(UART1, rotate);
 				wait(0.2);
-				if(vexRT[Ch4] < 0) {
-					motor[lever1] = back_full;
-					motor[lever2] = back_full;
-				}
-				else {
-					motor[lever1] = forward_full;
-					motor[lever2] = forward_full;
-				}
+				motor[lever1] = vexRT[Ch4];
+				motor[lever2] = vexRT[Ch4];
 			}
 
 			//Lift
