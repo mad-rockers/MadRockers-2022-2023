@@ -163,7 +163,7 @@ task main()
 					motor[IR] = 127;
 				}
 				else {
-					motor[IR] = -50;
+					motor[IR] = -85;
 				}
 				down = !down;
 			}
