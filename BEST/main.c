@@ -69,10 +69,8 @@ bool down = false;
 bool driving = true;
 
 //Lever Values
-int forward_half = 0;
 int forward_full = 127;
 int neutral = 0;
-int back_half = 0;
 int back_full = -127;
 
 //IR Codes
@@ -82,13 +80,6 @@ int drive_high = 0xC3;
 int rotate_low = 0x69;
 int rotate_med = 0x96;
 int rotate_high = 0x0F;
-
-/*//Practice Settings
-int drive = 0x5A;
-int rotate = 0x3C;
-int lift = 0x33;*/
-
-//Competition Settings
 int drive = 0x33;
 int rotate = 0x5A;
 int lift = 0x3C;
@@ -109,7 +100,13 @@ task main()
 					motor[leftDrive] = 0;
 				}
 				if(abs(vexRT[Ch2]) > 20) {
-					motor[rightDrive] = vexRT[Ch2];
+					if(vexRT[Btn7D] == 1) {
+						motor[leftDrive] = vexRT[Ch2];
+						motor[rightDrive] = vexRT[Ch2] * 0.9;
+					}
+					else {
+						motor[rightDrive] = vexRT[Ch2];
+					}
 				}
 				else {
 					motor[rightDrive] = 0;
@@ -123,14 +120,20 @@ task main()
 					motor[rightDrive] = 0;
 				}
 				if(abs(vexRT[Ch2]) > 20) {
-					motor[leftDrive] = -vexRT[Ch2];
+					if(vexRT[Btn7D] == 1) {
+						motor[leftDrive] = -vexRT[Ch2];
+						motor[rightDrive] = -vexRT[Ch2] * 0.9;
+					}
+					else {
+						motor[leftDrive] = -vexRT[Ch2];
+					}
 				}
 				else {
 					motor[leftDrive] = 0;
 				}
 			}
-			if(vexRT[Btn8D] == 1) {
-				while (vexRT[Btn8D] == 1) {}
+			if(vexRT[Btn6D] == 1) {
+				while (vexRT[Btn6D] == 1) {}
 				reversed = !reversed;
 			}
 
@@ -146,10 +149,10 @@ task main()
 		  }
 
 		  //Elevator
-		  if(vexRT[Btn7U] == 1) {
+		  if(vexRT[Btn5U] == 1) {
 				motor[elevator] = 100;
 			}
-			else if(vexRT[Btn7D] == 1) {
+			else if(vexRT[Btn5D] == 1) {
 				motor[elevator] = -100;
 			}
 			else {
@@ -157,8 +160,8 @@ task main()
 			}
 
 		  //IR Stick
-			if(vexRT[Btn8U] == 1) {
-				while(vexRT[Btn8U] == 1) {}
+			if(vexRT[Btn6U] == 1) {
+				while(vexRT[Btn6U] == 1) {}
 				if(down) {
 					motor[IR] = 127;
 				}
