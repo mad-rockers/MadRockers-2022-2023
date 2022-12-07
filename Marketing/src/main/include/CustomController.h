@@ -26,8 +26,8 @@ class CustomController : public XboxController {
      *             into (0-5).
      */
     explicit CustomController(int port) : XboxController(port) {
-       is_square = false;
-       deadzone = 0.1;
+      is_square = false;
+      deadzone = 0.1;
     };
     
     /**
@@ -56,21 +56,21 @@ class CustomController : public XboxController {
      * @return The value of the axis between -1 and 1.
      */
     double GetRawAxis(int axis) {
-        double value = GenericHID::GetRawAxis(axis);
-        if(inDeadzone(value)) { //If the value is in the deadzone, return 0.
-            return 0;
-        }
-        if(is_square) {
-            if(value > 0) {
-              return pow((value - deadzone) / (1 - deadzone), 2); //If it's above 0, use a positive square curve.
-            }
-            else {
-              return -pow((value + deadzone) / (1 - deadzone), 2); //If it's below 0, use a negative square curve.
-            }
+      double value = GenericHID::GetRawAxis(axis);
+      if(inDeadzone(value)) { //If the value is in the deadzone, return 0.
+        return 0;
+      }
+      if(is_square) {
+        if(value > 0) {
+          return pow((value - deadzone) / (1 - deadzone), 2); //If it's above 0, use a positive square curve.
         }
         else {
-            return value;
+          return -pow((value + deadzone) / (1 - deadzone), 2); //If it's below 0, use a negative square curve.
         }
+      }
+      else {
+        return value;
+      }
     }
 
     /**

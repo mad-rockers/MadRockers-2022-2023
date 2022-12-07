@@ -23,6 +23,7 @@ class Robot : public frc::TimedRobot {
   VictorSP back_l;
   VictorSP back_r;
   MecanumDrive drivetrain;
+  
   Robot() :
   controller(ports::controller),
   front_l(ports::front_l),
