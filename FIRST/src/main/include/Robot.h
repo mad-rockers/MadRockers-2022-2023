@@ -9,11 +9,6 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
-#include "Ports.h"
-#include "CustomController.h"
-
-using namespace frc;
-
 class Robot : public frc::TimedRobot {
  public:
   void RobotInit() override;
@@ -30,7 +25,4 @@ class Robot : public frc::TimedRobot {
   void SimulationPeriodic() override;
 
  private:
-  //Custom functions
-  double limelight_get(std::string, double);
-  void limelight_set(std::string, double);
 };
