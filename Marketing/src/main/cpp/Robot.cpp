@@ -39,7 +39,10 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {}
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  const float brake = 0.01;
+  drivetrain.DriveCartesian(controller.GetLeftX() + brake, controller.GetLeftY() + brake, controller.GetRightX() + brake);
+}
 
 void Robot::DisabledInit() {}
 
@@ -47,10 +50,7 @@ void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() {}
 
-void Robot::TestPeriodic() {
-  const float brake = 0.001;
-  drivetrain.DriveCartesian(controller.GetRightY() + brake, controller.GetRightX() + brake, controller.GetLeftX() + brake);
-}
+void Robot::TestPeriodic() {}
 
 void Robot::SimulationInit() {}
 
