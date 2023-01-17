@@ -21,7 +21,7 @@ Camera Stream:
  * @return The value of the variable.
  */
 double Robot::limelight_get(std::string variable, double default_value = 0.0) {
-    return nt::NetworkTableInstance::GetDefault().GetTable("limelight-shooter")->GetNumber(variable, default_value);
+    return nt::NetworkTableInstance::GetDefault().GetTable("limelight")->GetNumber(variable, default_value);
 }
 
 /**
@@ -31,5 +31,5 @@ double Robot::limelight_get(std::string variable, double default_value = 0.0) {
  * @param value The value to set the variable to.
  */
 void Robot::limelight_set(std::string variable, double value) {
-    nt::NetworkTableInstance::GetDefault().GetTable("limelight-shooter")->PutNumber(variable, value);
+    nt::NetworkTableInstance::GetDefault().GetTable("limelight")->PutNumber(variable, value);
 }
