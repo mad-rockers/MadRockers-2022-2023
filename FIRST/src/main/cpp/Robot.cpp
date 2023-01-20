@@ -8,7 +8,10 @@
 
 #include <frc/smartdashboard/SmartDashboard.h>
 
-void Robot::RobotInit() {}
+void Robot::RobotInit() {
+  left_b.Follow(left_f);
+  right_b.Follow(right_f);
+}
 
 /**
  * This function is called every 20 ms, no matter the mode. Use
@@ -26,7 +29,11 @@ void Robot::AutonomousPeriodic() {}
 
 void Robot::TeleopInit() {}
 
-void Robot::TeleopPeriodic() {}
+void Robot::TeleopPeriodic() {
+  float left_drive = driver.GetLeftY();
+  float right_drive = driver.GetRightY();
+  drivetrain.TankDrive(left_drive, right_drive, false);
+}
 
 void Robot::DisabledInit() {}
 

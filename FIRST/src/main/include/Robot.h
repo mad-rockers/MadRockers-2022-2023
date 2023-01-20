@@ -9,13 +9,35 @@
 #include <frc/TimedRobot.h>
 #include <frc/smartdashboard/SendableChooser.h>
 
+#include <frc/drive/DifferentialDrive.h>
+#include <frc/motorcontrol/VictorSP.h>
+#include "rev/CANSparkMax.h"
+
 #include "Ports.h"
 #include "CustomController.h"
 
 using namespace frc;
+using namespace rev;
 
 class Robot : public frc::TimedRobot {
  public:
+
+  CustomController driver;
+  DifferentialDrive drivetrain;
+  CANSparkMax left_f;
+  CANSparkMax left_b;
+  CANSparkMax right_f;
+  CANSparkMax right_b;
+
+  Robot() :
+  driver(Ports::driver),
+  drivetrain(left_f, right_f),
+  left_f(Ports::left_f, CANSparkMax::MotorType::kBrushless),
+  left_b(Ports::left_b, CANSparkMax::MotorType::kBrushless),
+  right_f(Ports::right_f, CANSparkMax::MotorType::kBrushless),
+  right_b(Ports::right_b, CANSparkMax::MotorType::kBrushless)
+  {}
+
   void RobotInit() override;
   void RobotPeriodic() override;
   void AutonomousInit() override;
