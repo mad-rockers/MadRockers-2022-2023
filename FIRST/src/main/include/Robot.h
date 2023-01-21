@@ -11,6 +11,7 @@
 
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/motorcontrol/VictorSP.h>
+#include <frc/motorcontrol/MotorControllerGroup.h>
 #include "rev/CANSparkMax.h"
 
 #include "Ports.h"
@@ -23,19 +24,31 @@ class Robot : public frc::TimedRobot {
  public:
 
   CustomController driver;
+  VictorSP left_front;
+  VictorSP left_back;
+  VictorSP right_front;
+  VictorSP right_back;
+  MotorControllerGroup left_drive;
+  MotorControllerGroup right_drive;
+  /*CANSparkMax left_front;
+  CANSparkMax left_back;
+  CANSparkMax right_front;
+  CANSparkMax right_back;*/
   DifferentialDrive drivetrain;
-  CANSparkMax left_f;
-  CANSparkMax left_b;
-  CANSparkMax right_f;
-  CANSparkMax right_b;
 
   Robot() :
   driver(Ports::driver),
-  drivetrain(left_f, right_f),
-  left_f(Ports::left_f, CANSparkMax::MotorType::kBrushless),
-  left_b(Ports::left_b, CANSparkMax::MotorType::kBrushless),
-  right_f(Ports::right_f, CANSparkMax::MotorType::kBrushless),
-  right_b(Ports::right_b, CANSparkMax::MotorType::kBrushless)
+  left_front(Ports::left_front),
+  left_back(Ports::left_back),
+  right_front(Ports::right_front),
+  right_back(Ports::right_back),
+  left_drive(left_front, left_back),
+  right_drive(right_front, right_back),
+  /*left_front(Ports::left_f, CANSparkMax::MotorType::kBrushless),
+  left_back(Ports::left_b, CANSparkMax::MotorType::kBrushless),
+  right_front(Ports::right_f, CANSparkMax::MotorType::kBrushless),
+  right_back(Ports::right_b, CANSparkMax::MotorType::kBrushless),*/
+  drivetrain(left_drive, right_drive)
   {}
 
   void RobotInit() override;
