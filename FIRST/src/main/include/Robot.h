@@ -63,8 +63,7 @@ class Robot : public frc::TimedRobot {
   void TestPeriodic() override;
   void SimulationInit() override;
   void SimulationPeriodic() override;
-
- private:
+  
   //Custom functions
   double limelight_get(std::string, double);
   void limelight_set(std::string, double);

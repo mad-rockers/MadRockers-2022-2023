@@ -9,8 +9,8 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 void Robot::RobotInit() {
-  /*left_b.Follow(left_f);
-  right_b.Follow(right_f);*/
+  /*left_back.Follow(left_front);
+  right_back.Follow(right_front);*/
 }
 
 /**
@@ -30,8 +30,9 @@ void Robot::AutonomousPeriodic() {}
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  float left_power = driver.GetLeftY();
-  float right_power = driver.GetRightY();
+  const float brake = 0.01;
+  float left_power = driver.GetLeftY() + brake;
+  float right_power = driver.GetRightY() + brake;
   drivetrain.TankDrive(left_power, right_power, false);
 }
 

@@ -26,7 +26,7 @@ class CustomController : public XboxController {
      *             into (0-5).
      */
     explicit CustomController(int port) : XboxController(port) {
-       is_square = false;
+       square_scale = false;
        deadzone = 0.1;
     };
     
@@ -35,18 +35,18 @@ class CustomController : public XboxController {
      * 
      * @param input The boolean to set the square scaling to.
      */
-    void setSquareScale(bool input) {
-      is_square = input;
+    void SetSquareScale(bool input) {
+      square_scale = input;
     }
 
     /**
-     * Returns whether the controller axis is in the deadzone. The deadzone -0.1 to 0.1.
+     * Returns whether the controller axis vale is in the deadzone.
      * 
      * @param value The value to check.
      * @return A boolean of whether the controller axis is in the deadzone.
      */
-    bool inDeadzone(double value) {
-      return value < deadzone && value > -deadzone; //If the value is inside our deadzone, return true.
+    bool InDeadzone(double value) {
+      return value < deadzone && value > -deadzone;
     }
 
     /**
@@ -57,15 +57,15 @@ class CustomController : public XboxController {
      */
     double GetRawAxis(int axis) {
         double value = GenericHID::GetRawAxis(axis);
-        if(inDeadzone(value)) { //If the value is in the deadzone, return 0.
+        if(InDeadzone(value)) { //If the value is in the deadzone, return 0.
             return 0;
         }
-        if(is_square) {
+        if(square_scale) {
             if(value > 0) {
-              return pow((value - deadzone) / (1 - deadzone), 2); //If it's above 0, use a positive square curve.
+              return pow((value - deadzone) / (1 - deadzone), 2); //If the value is above 0, use a positive square curve.
             }
             else {
-              return -pow((value + deadzone) / (1 - deadzone), 2); //If it's below 0, use a negative square curve.
+              return -pow((value + deadzone) / (1 - deadzone), 2); //If the value is below 0, use a negative square curve.
             }
         }
         else {
@@ -110,6 +110,6 @@ class CustomController : public XboxController {
     }
 
   private:
-    bool is_square;
+    bool square_scale;
     float deadzone;
 };
