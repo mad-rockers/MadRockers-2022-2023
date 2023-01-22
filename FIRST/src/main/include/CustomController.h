@@ -40,7 +40,7 @@ class CustomController : public XboxController {
     }
 
     /**
-     * Returns whether the controller axis vale is in the deadzone.
+     * Returns whether the controller axis value is in the deadzone.
      * 
      * @param value The value to check.
      * @return A boolean of whether the controller axis is in the deadzone.
