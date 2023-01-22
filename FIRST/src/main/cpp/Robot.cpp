@@ -10,7 +10,12 @@
 
 void Robot::RobotInit() {
   /*left_back.Follow(left_front);
-  right_back.Follow(right_front);*/
+  right_back.Follow(right_front);
+
+  left_front.SetInverted(false);
+  right_front.SetInverted(false);*/
+  left_drive.SetInverted(false);
+  right_drive.SetInverted(false);
 }
 
 /**
@@ -34,6 +39,14 @@ void Robot::TeleopPeriodic() {
   float left_power = driver.GetLeftY() + brake;
   float right_power = driver.GetRightY() + brake;
   drivetrain.TankDrive(left_power, right_power, false);
+
+  if(driver.GetAButton()) {
+    while(driver.GetAButton()) {}
+    /*left_front.SetInverted(!left_drive.GetInverted());
+    right_front.SetInverted(!right_drive.GetInverted());*/
+    left_drive.SetInverted(!left_drive.GetInverted());
+    right_drive.SetInverted(!right_drive.GetInverted());
+  }
 }
 
 void Robot::DisabledInit() {}
