@@ -14,6 +14,7 @@ void Robot::RobotInit() {
 
   left_front.SetInverted(false);
   right_front.SetInverted(false);*/
+  left_front.SetInverted(true);
   left_drive.SetInverted(false);
   right_drive.SetInverted(false);
 }
