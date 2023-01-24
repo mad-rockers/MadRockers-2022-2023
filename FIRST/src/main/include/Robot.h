@@ -35,6 +35,7 @@ class Robot : public frc::TimedRobot {
   CANSparkMax right_front;
   CANSparkMax right_back;*/
   DifferentialDrive drivetrain;
+  VictorSP box;
 
   Robot() :
   driver(Ports::driver),
@@ -48,7 +49,8 @@ class Robot : public frc::TimedRobot {
   left_back(Ports::left_b, CANSparkMax::MotorType::kBrushless),
   right_front(Ports::right_f, CANSparkMax::MotorType::kBrushless),
   right_back(Ports::right_b, CANSparkMax::MotorType::kBrushless),*/
-  drivetrain(left_drive, right_drive)
+  drivetrain(left_drive, right_drive),
+  box(Ports::box)
   {}
 
   void RobotInit() override;

@@ -37,8 +37,17 @@ void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
   const float brake = 0.01;
-  float left_power = driver.GetLeftY() + brake;
-  float right_power = driver.GetRightY() + brake;
+
+  float speed;
+  if(driver.GetRightBumper()) {
+    speed = 0.5;
+  }
+  else {
+    speed = 1;
+  }
+
+  float left_power = driver.GetLeftY() * speed + brake;
+  float right_power = driver.GetRightY() * speed + brake;
   drivetrain.TankDrive(left_power, right_power, false);
 
   if(driver.GetAButton()) {
@@ -48,6 +57,8 @@ void Robot::TeleopPeriodic() {
     left_drive.SetInverted(!left_drive.GetInverted());
     right_drive.SetInverted(!right_drive.GetInverted());
   }
+
+  box.Set(driver.GetLeftTriggerAxis() - driver.GetRightTriggerAxis());
 }
 
 void Robot::DisabledInit() {}
