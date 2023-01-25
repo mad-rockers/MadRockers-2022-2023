@@ -9,14 +9,16 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 void Robot::RobotInit() {
+  //TEMPORARY CODE FOR CIM
+  left_front.SetInverted(true);
+  left_drive.SetInverted(false);
+  right_drive.SetInverted(false);
+
   /*left_back.Follow(left_front);
   right_back.Follow(right_front);
 
   left_front.SetInverted(false);
   right_front.SetInverted(false);*/
-  left_front.SetInverted(true);
-  left_drive.SetInverted(false);
-  right_drive.SetInverted(false);
 }
 
 /**
@@ -44,15 +46,29 @@ void Robot::TeleopPeriodic() {
     speed = 1;
   }
 
-  float left_power = driver.GetLeftY() * speed;
-  float right_power = driver.GetRightY() * speed;
+  float left_power, right_power;
+
+  //TEMPORARY CODE FOR CIM
+  if(left_drive.GetInverted()) {
+
+  //if(left_front.GetInverted()) {
+    left_power = driver.GetRightY() * speed;
+    right_power = driver.GetLeftY() * speed;
+  }
+  else {
+    left_power = driver.GetLeftY() * speed;
+    right_power = driver.GetRightY() * speed;
+  }
+  
   drivetrain.TankDrive(left_power, right_power, false);
 
   if(driver.GetAButtonPressed()) {
-    /*left_front.SetInverted(!left_drive.GetInverted());
-    right_front.SetInverted(!right_drive.GetInverted());*/
+    //TEMPORARY CODE FOR CIM
     left_drive.SetInverted(!left_drive.GetInverted());
     right_drive.SetInverted(!right_drive.GetInverted());
+    
+    /*left_front.SetInverted(!left_drive.GetInverted());
+    right_front.SetInverted(!right_drive.GetInverted());*/
   }
 
   box.Set(driver.GetLeftTriggerAxis() - driver.GetRightTriggerAxis());
