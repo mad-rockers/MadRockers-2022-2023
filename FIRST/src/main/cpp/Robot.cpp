@@ -36,8 +36,6 @@ void Robot::AutonomousPeriodic() {}
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  const float brake = 0.01;
-
   float speed;
   if(driver.GetRightBumper()) {
     speed = 0.5;
@@ -46,12 +44,11 @@ void Robot::TeleopPeriodic() {
     speed = 1;
   }
 
-  float left_power = driver.GetLeftY() * speed + brake;
-  float right_power = driver.GetRightY() * speed + brake;
+  float left_power = driver.GetLeftY() * speed;
+  float right_power = driver.GetRightY() * speed;
   drivetrain.TankDrive(left_power, right_power, false);
 
-  if(driver.GetAButton()) {
-    while(driver.GetAButton()) {}
+  if(driver.GetAButtonPressed()) {
     /*left_front.SetInverted(!left_drive.GetInverted());
     right_front.SetInverted(!right_drive.GetInverted());*/
     left_drive.SetInverted(!left_drive.GetInverted());
