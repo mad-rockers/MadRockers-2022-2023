@@ -50,12 +50,13 @@ class Robot : public frc::TimedRobot {
   right_back(Ports::right_back),
   left_drive(left_front, left_back),
   right_drive(right_front, right_back),
+  drivetrain(left_drive, right_drive),
   
   /*left_front(Ports::left_f, CANSparkMax::MotorType::kBrushless),
   left_back(Ports::left_b, CANSparkMax::MotorType::kBrushless),
   right_front(Ports::right_f, CANSparkMax::MotorType::kBrushless),
-  right_back(Ports::right_b, CANSparkMax::MotorType::kBrushless),*/
-  drivetrain(left_drive, right_drive),
+  right_back(Ports::right_b, CANSparkMax::MotorType::kBrushless),
+  drivetrain(left_front, right_front),*/
   box(Ports::box)
   {}
 
