@@ -7,7 +7,6 @@ namespace Ports {
     const int left_back = 1;
     const int right_front = 2;
     const int right_back = 3;
-
-    //PWM
-    const int box = 4;
+    const int arm = 4;
+    const int extension = 5;
 }

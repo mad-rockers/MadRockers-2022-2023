@@ -9,16 +9,15 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 void Robot::RobotInit() {
-  //TEMPORARY CODE FOR CIM
-  left_front.SetInverted(true);
-  left_drive.SetInverted(false);
-  right_drive.SetInverted(false);
+  axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
+  axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
+  axis_chooser.SetDefaultOption("Z", ADIS16470_IMU::IMUAxis::kZ);
+  SmartDashboard::PutData("Gyro Axis", &axis_chooser);
 
-  /*left_back.Follow(left_front);
+  left_back.Follow(left_front);
   right_back.Follow(right_front);
-
   left_front.SetInverted(false);
-  right_front.SetInverted(false);*/
+  right_front.SetInverted(false);
 }
 
 /**
@@ -29,7 +28,13 @@ void Robot::RobotInit() {
  * <p> This runs after the mode specific periodic functions, but before
  * LiveWindow and SmartDashboard integrated updating.
  */
-void Robot::RobotPeriodic() {}
+void Robot::RobotPeriodic() {
+  if(gyro.GetYawAxis() != axis_chooser.GetSelected()) {
+    gyro.SetYawAxis(axis_chooser.GetSelected());
+  }
+  SmartDashboard::PutNumber("Gyro Angle", double(gyro.GetAngle()));
+  SmartDashboard::PutNumber("Gyro Rate", double(gyro.GetRate()));
+}
 
 void Robot::AutonomousInit() {}
 
@@ -48,10 +53,7 @@ void Robot::TeleopPeriodic() {
 
   float left_power, right_power;
 
-  //TEMPORARY CODE FOR CIM
-  if(left_drive.GetInverted()) {
-
-  //if(left_front.GetInverted()) {
+  if(left_front.GetInverted()) {
     left_power = driver.GetRightY() * speed;
     right_power = driver.GetLeftY() * speed;
   }
@@ -63,15 +65,9 @@ void Robot::TeleopPeriodic() {
   drivetrain.TankDrive(left_power, right_power, false);
 
   if(driver.GetAButtonPressed()) {
-    //TEMPORARY CODE FOR CIM
-    left_drive.SetInverted(!left_drive.GetInverted());
-    right_drive.SetInverted(!right_drive.GetInverted());
-    
-    /*left_front.SetInverted(!left_drive.GetInverted());
-    right_front.SetInverted(!right_drive.GetInverted());*/
+    left_front.SetInverted(!left_front.GetInverted());
+    right_front.SetInverted(!right_front.GetInverted());
   }
-
-  box.Set(driver.GetLeftTriggerAxis() - driver.GetRightTriggerAxis());
 }
 
 void Robot::DisabledInit() {}

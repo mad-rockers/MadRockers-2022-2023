@@ -10,9 +10,9 @@
 #include <frc/smartdashboard/SendableChooser.h>
 
 #include <frc/drive/DifferentialDrive.h>
-#include <frc/motorcontrol/VictorSP.h>
-#include <frc/motorcontrol/MotorControllerGroup.h>
+#include <frc/ADIS16470_IMU.h>
 #include "rev/CANSparkMax.h"
+#include "rev/ColorSensorV3.h"
 
 #include "Ports.h"
 #include "CustomController.h"
@@ -22,42 +22,30 @@ using namespace rev;
 
 class Robot : public frc::TimedRobot {
  public:
-
   CustomController driver;
-
-  //TEMPORARY CODE FOR CIM
-  VictorSP left_front;
-  VictorSP left_back;
-  VictorSP right_front;
-  VictorSP right_back;
-  MotorControllerGroup left_drive;
-  MotorControllerGroup right_drive;
-
-  /*CANSparkMax left_front;
+  CANSparkMax left_front;
   CANSparkMax left_back;
   CANSparkMax right_front;
-  CANSparkMax right_back;*/
+  CANSparkMax right_back;
+  /*CANSparkMax arm;
+  SparkMaxPIDController arm_pid = arm.GetPIDController();
+  CANSparkMax extension;
+  SparkMaxPIDController extension_pid = extension.GetPIDController();*/
   DifferentialDrive drivetrain;
-  VictorSP box;
+  ADIS16470_IMU gyro;
+  SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
+  //ColorSensorV3 color_sensor;
 
   Robot() :
   driver(Ports::driver),
-
-  //TEMPORARY CODE FOR CIM
-  left_front(Ports::left_front),
-  left_back(Ports::left_back),
-  right_front(Ports::right_front),
-  right_back(Ports::right_back),
-  left_drive(left_front, left_back),
-  right_drive(right_front, right_back),
-  drivetrain(left_drive, right_drive),
-  
-  /*left_front(Ports::left_f, CANSparkMax::MotorType::kBrushless),
-  left_back(Ports::left_b, CANSparkMax::MotorType::kBrushless),
-  right_front(Ports::right_f, CANSparkMax::MotorType::kBrushless),
-  right_back(Ports::right_b, CANSparkMax::MotorType::kBrushless),
-  drivetrain(left_front, right_front),*/
-  box(Ports::box)
+  left_front(Ports::left_front, CANSparkMax::MotorType::kBrushless),
+  left_back(Ports::left_back, CANSparkMax::MotorType::kBrushless),
+  right_front(Ports::right_front, CANSparkMax::MotorType::kBrushless),
+  right_back(Ports::right_back, CANSparkMax::MotorType::kBrushless),
+  /*arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
+  extension(Ports::extension, CANSparkMax::MotorType::kBrushless),*/
+  drivetrain(left_front, right_front)
+  //color_sensor(I2C::Port::kMXP)
   {}
 
   void RobotInit() override;
@@ -77,4 +65,6 @@ class Robot : public frc::TimedRobot {
   double GetLimelightValue(std::string);
   std::vector<double> GetLimelightArray(std::string);
   void SetLimelightValue(std::string, double);
+
+  private:
 };
