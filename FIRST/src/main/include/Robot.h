@@ -10,6 +10,7 @@
 #include <frc/smartdashboard/SendableChooser.h>
 
 #include <frc/drive/DifferentialDrive.h>
+#include <frc/DigitalInput.h>
 #include <frc/ADIS16470_IMU.h>
 #include "rev/CANSparkMax.h"
 #include "rev/ColorSensorV3.h"
@@ -34,7 +35,11 @@ class Robot : public frc::TimedRobot {
   DifferentialDrive drivetrain;
   ADIS16470_IMU gyro;
   SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
-  //ColorSensorV3 color_sensor;
+  /*DigitalInput arm_limit_low;
+  DigitalInput arm_limit_high;
+  DigitalInput extension_limit_back;
+  DigitalInput extension_limit_front;
+  ColorSensorV3 color_sensor;*/
 
   Robot() :
   driver(Ports::driver),
@@ -45,7 +50,11 @@ class Robot : public frc::TimedRobot {
   /*arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
   extension(Ports::extension, CANSparkMax::MotorType::kBrushless),*/
   drivetrain(left_front, right_front)
-  //color_sensor(I2C::Port::kMXP)
+  /*arm_limit_low(Ports::arm_limit_low),
+  arm_limit_high(Ports::arm_limit_high),
+  extension_limit_back(Ports::extension_limit_back),
+  extension_limit_front(Ports::extension_limit_front),
+  color_sensor(Ports::color_sensor)*/
   {}
 
   void RobotInit() override;
