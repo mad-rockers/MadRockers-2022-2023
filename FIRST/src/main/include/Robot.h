@@ -10,8 +10,9 @@
 #include <frc/smartdashboard/SendableChooser.h>
 
 #include <frc/drive/DifferentialDrive.h>
-#include <frc/DigitalInput.h>
 #include <frc/ADIS16470_IMU.h>
+#include <frc/Solenoid.h>
+#include <frc/DigitalInput.h>
 #include "rev/CANSparkMax.h"
 #include "rev/ColorSensorV3.h"
 
@@ -29,13 +30,18 @@ class Robot : public frc::TimedRobot {
   CANSparkMax right_front;
   CANSparkMax right_back;
   /*CANSparkMax arm;
+  SparkMacRelativeEncoder arm_encoder = arm.GetEncoder();
   SparkMaxPIDController arm_pid = arm.GetPIDController();
   CANSparkMax extension;
+  SparkMacRelativeEncoder extension_encoder = extension.GetEncoder();
   SparkMaxPIDController extension_pid = extension.GetPIDController();*/
   DifferentialDrive drivetrain;
   ADIS16470_IMU gyro;
   SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
-  /*DigitalInput arm_limit_low;
+  /*Solenoid box;
+  Solenoid pressure_switch;
+  Solenoid grabber;
+  DigitalInput arm_limit_low;
   DigitalInput arm_limit_high;
   DigitalInput extension_limit_back;
   DigitalInput extension_limit_front;
@@ -50,7 +56,10 @@ class Robot : public frc::TimedRobot {
   /*arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
   extension(Ports::extension, CANSparkMax::MotorType::kBrushless),*/
   drivetrain(left_front, right_front)
-  /*arm_limit_low(Ports::arm_limit_low),
+  /*box(PneumaticsModuleType::CTREPCM, Ports::box),
+  pressure_switch(PneumaticsModuleType::CTREPCM, Ports::pressure_switch),
+  grabber(PneumaticsModuleType::CTREPCM, Ports::grabber),
+  arm_limit_low(Ports::arm_limit_low),
   arm_limit_high(Ports::arm_limit_high),
   extension_limit_back(Ports::extension_limit_back),
   extension_limit_front(Ports::extension_limit_front),
