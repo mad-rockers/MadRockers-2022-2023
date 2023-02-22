@@ -3,6 +3,7 @@ namespace Ports {
     const int driver = 0;
 
     //CAN
+    const int PH = 0;
     const int left_front = 1;
     const int left_back = 2;
     const int right_front = 3;

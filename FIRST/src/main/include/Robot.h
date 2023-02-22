@@ -56,9 +56,9 @@ class Robot : public frc::TimedRobot {
   /*arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
   extension(Ports::extension, CANSparkMax::MotorType::kBrushless),*/
   drivetrain(left_front, right_front)
-  /*box(PneumaticsModuleType::CTREPCM, Ports::box),
-  pressure_switch(PneumaticsModuleType::CTREPCM, Ports::pressure_switch),
-  grabber(PneumaticsModuleType::CTREPCM, Ports::grabber),
+  /*box(Ports::PH, PneumaticsModuleType::REVPH, Ports::box),
+  pressure_switch(Ports::PH, PneumaticsModuleType::REVPH, Ports::pressure_switch),
+  grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::grabber),
   arm_limit_low(Ports::arm_limit_low),
   arm_limit_high(Ports::arm_limit_high),
   extension_limit_back(Ports::extension_limit_back),
