@@ -25,7 +25,7 @@ class CustomController : public XboxController {
      * @param port The port on the Driver Station that the controller is plugged
      *             into (0-5).
      */
-    explicit CustomController(int port) : XboxController(port) {
+    CustomController(int port) : XboxController(port) {
        square_scale = false;
        deadzone = 0.1;
     };
