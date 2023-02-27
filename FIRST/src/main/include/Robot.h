@@ -11,6 +11,7 @@
 
 #include <frc/drive/DifferentialDrive.h>
 #include <frc/ADIS16470_IMU.h>
+#include <frc/Compressor.h>
 #include <frc/Solenoid.h>
 #include <frc/DigitalInput.h>
 #include "rev/CANSparkMax.h"
@@ -26,50 +27,52 @@ using namespace rev;
 
 class Robot : public frc::TimedRobot {
  public:
-  CustomJoystick driver_left;
-  CustomJoystick driver_right;
+  CustomJoystick r_driver_left;
+  CustomJoystick r_driver_right;
   CustomController r_operator;
-  CANSparkMax left_front;
-  CANSparkMax left_back;
-  CANSparkMax right_front;
-  CANSparkMax right_back;
-  /*CANSparkMax arm;
-  SparkMacRelativeEncoder arm_encoder = arm.GetEncoder();
-  SparkMaxPIDController arm_pid = arm.GetPIDController();
-  CANSparkMax extension;
-  SparkMacRelativeEncoder extension_encoder = extension.GetEncoder();
-  SparkMaxPIDController extension_pid = extension.GetPIDController();*/
-  DifferentialDrive drivetrain;
-  ADIS16470_IMU gyro;
+  CANSparkMax r_left_front;
+  CANSparkMax r_left_back;
+  CANSparkMax r_right_front;
+  CANSparkMax r_right_back;
+  CANSparkMax r_arm;
+  SparkMaxRelativeEncoder r_arm_encoder = r_arm.GetEncoder();
+  SparkMaxPIDController r_arm_pid = r_arm.GetPIDController();
+  CANSparkMax r_extension;
+  SparkMaxRelativeEncoder r_extension_encoder = r_extension.GetEncoder();
+  SparkMaxPIDController r_extension_pid = r_extension.GetPIDController();
+  DifferentialDrive r_drivetrain;
+  ADIS16470_IMU r_gyro;
   SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
-  /*Solenoid box;
-  Solenoid pressure_switch;
-  Solenoid grabber;
-  DigitalInput arm_limit_low;
-  DigitalInput arm_limit_high;
-  DigitalInput extension_limit_back;
-  DigitalInput extension_limit_front;
-  ColorSensorV3 color_sensor;*/
+  Compressor r_compressor;
+  Solenoid r_box;
+  Solenoid r_pressure_switch;
+  Solenoid r_grabber;
+  DigitalInput r_arm_limit_low;
+  DigitalInput r_arm_limit_high;
+  DigitalInput r_extension_limit_back;
+  DigitalInput r_extension_limit_front;
+  ColorSensorV3 r_color_sensor;
 
   Robot() :
-  driver_left(Ports::driver_left),
-  driver_right(Ports::driver_right),
+  r_driver_left(Ports::driver_left),
+  r_driver_right(Ports::driver_right),
   r_operator(Ports::r_operator),
-  left_front(Ports::left_front, CANSparkMax::MotorType::kBrushless),
-  left_back(Ports::left_back, CANSparkMax::MotorType::kBrushless),
-  right_front(Ports::right_front, CANSparkMax::MotorType::kBrushless),
-  right_back(Ports::right_back, CANSparkMax::MotorType::kBrushless),
-  /*arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
-  extension(Ports::extension, CANSparkMax::MotorType::kBrushless),*/
-  drivetrain(left_front, right_front)
-  /*box(Ports::PH, PneumaticsModuleType::REVPH, Ports::box),
-  pressure_switch(Ports::PH, PneumaticsModuleType::REVPH, Ports::pressure_switch),
-  grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::grabber),
-  arm_limit_low(Ports::arm_limit_low),
-  arm_limit_high(Ports::arm_limit_high),
-  extension_limit_back(Ports::extension_limit_back),
-  extension_limit_front(Ports::extension_limit_front),
-  color_sensor(Ports::color_sensor)*/
+  r_left_front(Ports::left_front, CANSparkMax::MotorType::kBrushless),
+  r_left_back(Ports::left_back, CANSparkMax::MotorType::kBrushless),
+  r_right_front(Ports::right_front, CANSparkMax::MotorType::kBrushless),
+  r_right_back(Ports::right_back, CANSparkMax::MotorType::kBrushless),
+  r_arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
+  r_extension(Ports::extension, CANSparkMax::MotorType::kBrushless),
+  r_drivetrain(r_left_front, r_right_front),
+  r_compressor(Ports::PH, PneumaticsModuleType::REVPH),
+  r_box(Ports::PH, PneumaticsModuleType::REVPH, Ports::box),
+  r_pressure_switch(Ports::PH, PneumaticsModuleType::REVPH, Ports::pressure_switch),
+  r_grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::grabber),
+  r_arm_limit_low(Ports::arm_limit_low),
+  r_arm_limit_high(Ports::arm_limit_high),
+  r_extension_limit_back(Ports::extension_limit_back),
+  r_extension_limit_front(Ports::extension_limit_front),
+  r_color_sensor(Ports::color_sensor)
   {}
 
   void RobotInit() override;
@@ -86,7 +89,11 @@ class Robot : public frc::TimedRobot {
   void SimulationPeriodic() override;
   
   //Custom functions
-  void drive();
+  void drivetrain();
+  void arm();
+  void extension();
+  void box();
+  void grabber();
   
   double GetLimelightValue(std::string);
   std::vector<double> GetLimelightArray(std::string);

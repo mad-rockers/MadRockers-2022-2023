@@ -9,23 +9,23 @@
 #include <frc/smartdashboard/SmartDashboard.h>
 
 void Robot::RobotInit() {
+  r_left_back.Follow(r_left_front);
+  r_right_back.Follow(r_right_front);
+  r_left_front.SetInverted(false);
+  r_right_front.SetInverted(false);
+
   axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
   axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
   axis_chooser.SetDefaultOption("Z", ADIS16470_IMU::IMUAxis::kZ);
   SmartDashboard::PutData("Gyro Axis", &axis_chooser);
-
-  left_back.Follow(left_front);
-  right_back.Follow(right_front);
-  left_front.SetInverted(false);
-  right_front.SetInverted(false);
 }
 
 void Robot::RobotPeriodic() {
-  if(gyro.GetYawAxis() != axis_chooser.GetSelected()) {
-    gyro.SetYawAxis(axis_chooser.GetSelected());
+  if(r_gyro.GetYawAxis() != axis_chooser.GetSelected()) {
+    r_gyro.SetYawAxis(axis_chooser.GetSelected());
   }
-  SmartDashboard::PutNumber("Gyro Angle", double(gyro.GetAngle()));
-  SmartDashboard::PutNumber("Gyro Rate", double(gyro.GetRate()));
+  SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
+  SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
 }
 
 void Robot::AutonomousInit() {}
@@ -35,7 +35,11 @@ void Robot::AutonomousPeriodic() {}
 void Robot::TeleopInit() {}
 
 void Robot::TeleopPeriodic() {
-  drive();
+  drivetrain();
+  arm();
+  extension();
+  box();
+  grabber();
 }
 
 void Robot::DisabledInit() {}

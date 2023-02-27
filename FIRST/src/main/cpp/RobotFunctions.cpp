@@ -1,8 +1,8 @@
 #include "Robot.h"
 
-void Robot::drive() {
+void Robot::drivetrain() {
     float speed;
-    if(driver_right.GetTrigger()) {
+    if(r_driver_right.GetTrigger()) {
         speed = 0.5;
     }
     else {
@@ -11,19 +11,45 @@ void Robot::drive() {
 
     float left_power, right_power;
 
-    if(left_front.GetInverted()) {
-        left_power = driver_right.GetY() * speed;
-        right_power = driver_left.GetY() * speed;
+    if(r_left_front.GetInverted()) {
+        left_power = r_driver_right.GetY() * speed;
+        right_power = r_driver_left.GetY() * speed;
     }
     else {
-        left_power = driver_left.GetY() * speed;
-        right_power = driver_right.GetY() * speed;
+        left_power = r_driver_left.GetY() * speed;
+        right_power = r_driver_right.GetY() * speed;
     }
     
-    drivetrain.TankDrive(left_power, right_power, false);
+    r_drivetrain.TankDrive(left_power, right_power, false);
 
-    if(driver_left.GetTriggerPressed()) {
-        left_front.SetInverted(!left_front.GetInverted());
-        right_front.SetInverted(!right_front.GetInverted());
+    if(r_driver_left.GetTriggerPressed()) {
+        r_left_front.SetInverted(!r_left_front.GetInverted());
+        r_right_front.SetInverted(!r_right_front.GetInverted());
+    }
+}
+
+void Robot::arm() {
+    r_arm.Set(r_operator.GetRightY());
+}
+
+void Robot::extension() {
+    r_extension.Set(r_operator.GetLeftY());
+}
+
+void Robot::box() {
+    if(r_operator.GetRightBumper()) {
+        r_box.Set(true);
+    }
+    if(r_operator.GetLeftBumper()) {
+        r_box.Set(false);
+    }
+}
+
+void Robot::grabber() {
+    if(r_operator.GetAButton()) {
+        r_grabber.Set(true);
+    }
+    if(r_operator.GetYButton()) {
+        r_grabber.Set(false);
     }
 }
