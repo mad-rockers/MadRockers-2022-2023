@@ -14,6 +14,8 @@ void Robot::RobotInit() {
   r_left_front.SetInverted(false);
   r_right_front.SetInverted(false);
 
+  r_compressor.EnableAnalog(60_psi, 120_psi);
+
   axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
   axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
   axis_chooser.SetDefaultOption("Z", ADIS16470_IMU::IMUAxis::kZ);
