@@ -18,7 +18,6 @@
 #include "rev/ColorSensorV3.h"
 
 #include "Ports.h"
-#include "CustomJoystick.h"
 #include "CustomController.h"
 #include "LimelightHelpers.h"
 
@@ -27,13 +26,14 @@ using namespace rev;
 
 class Robot : public frc::TimedRobot {
  public:
-  CustomJoystick r_driver_left;
-  CustomJoystick r_driver_right;
+  CustomController r_driver;
   CustomController r_operator;
   CANSparkMax r_left_front;
   CANSparkMax r_left_back;
+  SparkMaxPIDController r_left_pid = r_left_front.GetPIDController();
   CANSparkMax r_right_front;
   CANSparkMax r_right_back;
+  SparkMaxPIDController r_right_pid = r_right_front.GetPIDController();
   CANSparkMax r_arm;
   SparkMaxRelativeEncoder r_arm_encoder = r_arm.GetEncoder();
   SparkMaxPIDController r_arm_pid = r_arm.GetPIDController();
@@ -54,8 +54,7 @@ class Robot : public frc::TimedRobot {
   ColorSensorV3 r_color_sensor;
 
   Robot() :
-  r_driver_left(Ports::driver_left),
-  r_driver_right(Ports::driver_right),
+  r_driver(Ports::driver),
   r_operator(Ports::r_operator),
   r_left_front(Ports::left_front, CANSparkMax::MotorType::kBrushless),
   r_left_back(Ports::left_back, CANSparkMax::MotorType::kBrushless),

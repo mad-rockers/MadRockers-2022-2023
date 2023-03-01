@@ -2,7 +2,7 @@
 
 void Robot::drivetrain() {
     float speed;
-    if(r_driver_right.GetTrigger()) {
+    if(r_driver.GetRightBumper()) {
         speed = 0.5;
     }
     else {
@@ -12,17 +12,17 @@ void Robot::drivetrain() {
     float left_power, right_power;
 
     if(r_left_front.GetInverted()) {
-        left_power = r_driver_right.GetY() * speed;
-        right_power = r_driver_left.GetY() * speed;
+        left_power = r_driver.GetRightY() * speed;
+        right_power = r_driver.GetLeftY() * speed;
     }
     else {
-        left_power = r_driver_left.GetY() * speed;
-        right_power = r_driver_right.GetY() * speed;
+        left_power = r_driver.GetLeftY() * speed;
+        right_power = r_driver.GetRightY() * speed;
     }
     
     r_drivetrain.TankDrive(left_power, right_power, false);
 
-    if(r_driver_left.GetTriggerPressed()) {
+    if(r_driver.GetAButton()) {
         r_left_front.SetInverted(!r_left_front.GetInverted());
         r_right_front.SetInverted(!r_right_front.GetInverted());
     }
