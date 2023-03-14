@@ -45,8 +45,8 @@ class Robot : public frc::TimedRobot {
   SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
   Compressor r_compressor;
   Solenoid r_box;
-  Solenoid r_pressure_switch;
-  Solenoid r_grabber;
+  Solenoid r_low_grabber;
+  Solenoid r_high_grabber;
   DigitalInput r_arm_limit_low;
   DigitalInput r_arm_limit_high;
   DigitalInput r_extension_limit_back;
@@ -65,8 +65,8 @@ class Robot : public frc::TimedRobot {
   r_drivetrain(r_left_front, r_right_front),
   r_compressor(Ports::PH, PneumaticsModuleType::REVPH),
   r_box(Ports::PH, PneumaticsModuleType::REVPH, Ports::box),
-  r_pressure_switch(Ports::PH, PneumaticsModuleType::REVPH, Ports::pressure_switch),
-  r_grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::grabber),
+  r_low_grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::low_grabber),
+  r_high_grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::high_grabber),
   r_arm_limit_low(Ports::arm_limit_low),
   r_arm_limit_high(Ports::arm_limit_high),
   r_extension_limit_back(Ports::extension_limit_back),

@@ -47,9 +47,9 @@ void Robot::box() {
 
 void Robot::grabber() {
     if(r_operator.GetAButton()) {
-        r_grabber.Set(true);
+        r_high_grabber.Set(true);
     }
     if(r_operator.GetYButton()) {
-        r_grabber.Set(false);
+        r_high_grabber.Set(false);
     }
 }
