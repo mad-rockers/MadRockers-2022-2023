@@ -28,6 +28,11 @@ void Robot::RobotPeriodic() {
   }
   SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
   SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
+
+  SmartDashboard::PutNumber("Arm Limit Low", r_arm_limit_low.Get());
+  SmartDashboard::PutNumber("Arm Limit High", r_arm_limit_high.Get());
+  SmartDashboard::PutNumber("Extension Limit Back", r_extension_limit_back.Get());
+  SmartDashboard::PutNumber("Extension Limit Front", r_extension_limit_front.Get());
 }
 
 void Robot::AutonomousInit() {}

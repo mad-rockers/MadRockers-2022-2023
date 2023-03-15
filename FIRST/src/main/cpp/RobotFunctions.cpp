@@ -2,7 +2,7 @@
 
 void Robot::drivetrain() {
     float speed;
-    if(r_driver.GetRightBumper()) {
+    if(r_driver.GetR1Button()) {
         speed = 0.5;
     }
     else {
@@ -22,7 +22,7 @@ void Robot::drivetrain() {
     
     r_drivetrain.TankDrive(left_power, right_power, false);
 
-    if(r_driver.GetAButton()) {
+    if(r_driver.GetCrossButton()) {
         r_left_front.SetInverted(!r_left_front.GetInverted());
         r_right_front.SetInverted(!r_right_front.GetInverted());
     }
@@ -37,19 +37,19 @@ void Robot::extension() {
 }
 
 void Robot::box() {
-    if(r_operator.GetRightBumper()) {
+    if(r_operator.GetR2Axis()) {
         r_box.Set(true);
     }
-    if(r_operator.GetLeftBumper()) {
+    if(r_operator.GetL2Axis()) {
         r_box.Set(false);
     }
 }
 
 void Robot::grabber() {
-    if(r_operator.GetAButton()) {
+    if(r_operator.GetCrossButton()) {
         r_high_grabber.Set(true);
     }
-    if(r_operator.GetYButton()) {
+    if(r_operator.GetTriangleButton()) {
         r_high_grabber.Set(false);
     }
 }
