@@ -1,4 +1,4 @@
-#include <frc/PS4Controller.h>
+#include <frc/XboxController.h>
 #include <cmath>
 
 using namespace frc;
@@ -14,7 +14,7 @@ using namespace frc;
  * 
  * This class is a modified version of XboxController.
  */
-class CustomController : public PS4Controller {
+class CustomController : public XboxController {
   public:
 
     /**
@@ -25,7 +25,7 @@ class CustomController : public PS4Controller {
      * @param port The port on the Driver Station that the controller is plugged
      *             into (0-5).
      */
-    CustomController(int port) : PS4Controller(port) {
+    CustomController(int port) : XboxController(port) {
        square_scale = false;
        deadzone = 0.1;
     };

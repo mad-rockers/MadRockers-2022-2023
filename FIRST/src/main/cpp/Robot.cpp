@@ -7,14 +7,18 @@
 #include <fmt/core.h>
 
 #include <frc/smartdashboard/SmartDashboard.h>
+#include <cameraserver/CameraServer.h>
 
 void Robot::RobotInit() {
   r_left_back.Follow(r_left_front);
   r_right_back.Follow(r_right_front);
-  r_left_front.SetInverted(false);
+  r_left_front.SetInverted(true);
   r_right_front.SetInverted(false);
 
   r_compressor.EnableAnalog(60_psi, 120_psi);
+
+  CameraServer::StartAutomaticCapture();
+  CameraServer::StartAutomaticCapture();
 
   axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
   axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
