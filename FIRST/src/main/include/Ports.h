@@ -13,10 +13,10 @@ namespace Ports {
     const int extension = 7;
 
     //DIO
-    const int arm_limit_low = 0;
-    const int arm_limit_high = 1;
-    const int extension_limit_back = 2;
-    const int extension_limit_front = 3;
+    const int arm_limit_high = 0;
+    const int arm_limit_low = 1;
+    const int extension_limit_front = 2;
+    const int extension_limit_back = 3;
 
     //Pneumatics
     const int box = 7;
