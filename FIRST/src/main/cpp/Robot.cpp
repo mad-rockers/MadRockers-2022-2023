@@ -14,6 +14,7 @@ void Robot::RobotInit() {
   r_right_back.Follow(r_right_front);
   r_left_front.SetInverted(true);
   r_right_front.SetInverted(false);
+  r_extension.SetInverted(true);
 
   r_compressor.EnableAnalog(60_psi, 120_psi);
 

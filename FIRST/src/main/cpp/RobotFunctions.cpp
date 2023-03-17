@@ -30,10 +30,22 @@ void Robot::drivetrain() {
 
 void Robot::arm() {
     r_arm.Set(r_operator.GetRightY());
+    if(r_arm_limit_high.Get() && r_arm.Get() < 0) {
+        r_arm.Set(0);
+    }
+    if(r_arm_limit_low.Get() && r_arm.Get() > 0) {
+        r_arm.Set(0);
+    }
 }
 
 void Robot::extension() {
     r_extension.Set(r_operator.GetLeftY());
+    if(r_extension_limit_front.Get() && r_extension.Get() < 0) {
+        r_extension.Set(0);
+    }
+    if(r_extension_limit_back.Get() && r_extension.Get() > 0) {
+        r_extension.Set(0);
+    }
 }
 
 void Robot::box() {
