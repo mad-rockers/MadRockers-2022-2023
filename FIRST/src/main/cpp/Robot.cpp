@@ -21,6 +21,10 @@ void Robot::RobotInit() {
   CameraServer::StartAutomaticCapture();
   CameraServer::StartAutomaticCapture();
 
+  r_auto_mode.SetDefaultOption("Charge Station", "Charge Station");
+  r_auto_mode.AddOption("No Charge Station", "No Charge Station");
+  SmartDashboard::PutData("Auto Mode", &r_auto_mode);
+
   axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
   axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
   axis_chooser.SetDefaultOption("Z", ADIS16470_IMU::IMUAxis::kZ);

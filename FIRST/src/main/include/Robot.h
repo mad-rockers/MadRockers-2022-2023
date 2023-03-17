@@ -42,6 +42,7 @@ class Robot : public frc::TimedRobot {
   SparkMaxPIDController r_extension_pid = r_extension.GetPIDController();
   DifferentialDrive r_drivetrain;
   ADIS16470_IMU r_gyro;
+  SendableChooser<std::string> r_auto_mode;
   SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
   Compressor r_compressor;
   Solenoid r_box;
