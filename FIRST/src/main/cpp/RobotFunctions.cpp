@@ -25,6 +25,7 @@ void Robot::drivetrain() {
     if(r_driver.GetAButton()) {
         r_left_front.SetInverted(!r_left_front.GetInverted());
         r_right_front.SetInverted(!r_right_front.GetInverted());
+        while(r_driver.GetAButton()) {}
     }
 }
 
