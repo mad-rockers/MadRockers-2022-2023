@@ -30,22 +30,50 @@ void Robot::drivetrain() {
 }
 
 void Robot::arm() {
-    r_arm.Set(r_operator.GetRightY());
-    if(r_arm_limit_high.Get() && r_arm.Get() < 0) {
-        r_arm.Set(0);
+    double setpoint = r_operator.GetRightY();
+    if(r_arm_limit_high.Get()) {
+        if(setpoint < 0) {
+            r_arm.Set(0);
+        }
+        else {
+            r_arm.Set(setpoint);
+        }
     }
-    if(r_arm_limit_low.Get() && r_arm.Get() > 0) {
-        r_arm.Set(0);
+    else if(r_arm_limit_low.Get()) {
+        r_arm_encoder.SetPosition(0);
+        if(setpoint > 0) {
+            r_arm.Set(0);
+        }
+        else {
+            r_arm.Set(setpoint);
+        }
+    }
+    else {
+        r_arm.Set(setpoint);
     }
 }
 
 void Robot::extension() {
-    r_extension.Set(r_operator.GetLeftY());
-    if(r_extension_limit_front.Get() && r_extension.Get() < 0) {
-        r_extension.Set(0);
+    double setpoint = r_operator.GetLeftY();
+    if(r_extension_limit_front.Get()) {
+        if(setpoint < 0) {
+            r_extension.Set(0);
+        }
+        else {
+            r_extension.Set(setpoint);
+        }
     }
-    if(r_extension_limit_back.Get() && r_extension.Get() > 0) {
-        r_extension.Set(0);
+    else if(r_extension_limit_back.Get()) {
+        r_extension_encoder.SetPosition(0);
+        if(setpoint > 0) {
+            r_extension.Set(0);
+        }
+        else {
+            r_extension.Set(setpoint);
+        }
+    }
+    else {
+        r_extension.Set(setpoint);
     }
 }
 
