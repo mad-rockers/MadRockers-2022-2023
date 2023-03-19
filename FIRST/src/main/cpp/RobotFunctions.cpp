@@ -2,86 +2,114 @@
 
 void Robot::drivetrain() {
     float speed;
-    if(r_driver.GetRightBumper()) {
-        speed = 0.5;
+    if(r_driver.GetLeftBumper()) {
+        if(timer.Get() == 0_s) {
+            timer.Start();
+            speed = 0.6;
+        }
+        else if(timer.Get() > 0.5_s) {
+            speed = 1;
+        }
     }
     else {
-        speed = 1;
+        timer.Stop();
+        timer.Reset();
+        speed = 0.3;
     }
 
     float left_power, right_power;
+    left_power = r_driver.GetLeftY() * speed;
+    right_power = r_driver.GetRightY() * speed;
 
-    if(r_left_front.GetInverted()) {
-        left_power = r_driver.GetLeftY() * speed;
-        right_power = r_driver.GetRightY() * speed;
-    }
-    else {
-        left_power = r_driver.GetRightY() * speed;
-        right_power = r_driver.GetLeftY() * speed;
-    }
-    
     r_drivetrain.TankDrive(left_power, right_power, false);
-
-    if(r_driver.GetAButton()) {
-        r_left_front.SetInverted(!r_left_front.GetInverted());
-        r_right_front.SetInverted(!r_right_front.GetInverted());
-        while(r_driver.GetAButton()) {}
-    }
 }
 
 void Robot::arm() {
-    double setpoint = r_operator.GetRightY();
-    if(r_arm_limit_high.Get()) {
-        if(setpoint < 0) {
-            r_arm.Set(0);
-        }
-        else {
-            r_arm.Set(setpoint);
-        }
+    /*
+    Arm States:
+    0 - Normal control
+    1 - Zero position
+    2 - Grabbing position
+    */
+    double grab = -1;
+    
+    if(r_operator.GetLeftBumper()) {
+        arm_state = 1;
     }
-    else if(r_arm_limit_low.Get()) {
-        r_arm_encoder.SetPosition(0);
-        if(setpoint > 0) {
-            r_arm.Set(0);
-        }
-        else {
-            r_arm.Set(setpoint);
-        }
+    else if (r_operator.GetRightBumper()) {
+        arm_state = 2;
     }
     else {
-        r_arm.Set(setpoint);
+        arm_state = 0;
+    }
+
+    if(arm_state == 1) {
+        r_arm_pid.SetReference(0, ControlType::kPosition);
+    }
+    else if(arm_state == 2) {
+        r_arm_pid.SetReference(grab, ControlType::kPosition);
+    }
+    else {
+        double setpoint = r_operator.GetLeftY();
+        if(r_arm_limit_high.Get() && setpoint < 0) {
+            r_arm.Set(0);
+        }
+        else if(r_arm_limit_low.Get() && setpoint > 0) {
+            r_arm.Set(0);
+        }
+        else if(setpoint == 0) {
+            r_arm_pid.SetReference(0, ControlType::kVelocity);
+        }
+        else {
+            r_arm.Set(setpoint);
+        }
     }
 }
 
 void Robot::extension() {
-    double setpoint = r_operator.GetLeftY();
-    if(r_extension_limit_front.Get()) {
-        if(setpoint < 0) {
-            r_extension.Set(0);
-        }
-        else {
-            r_extension.Set(setpoint);
-        }
+    /*
+    Extension States:
+    0 - Normal control
+    1 - Zero position
+    2 - Grabbing position
+    */
+    double grab = -46;
+
+    if(r_operator.GetLeftBumper()) {
+        extension_state = 1;
     }
-    else if(r_extension_limit_back.Get()) {
-        r_extension_encoder.SetPosition(0);
-        if(setpoint > 0) {
-            r_extension.Set(0);
-        }
-        else {
-            r_extension.Set(setpoint);
-        }
+    else if (r_operator.GetRightBumper()) {
+        extension_state = 2;
     }
     else {
-        r_extension.Set(setpoint);
+        extension_state = 0;
+    }
+
+    if(extension_state == 1) {
+        r_extension_pid.SetReference(0, ControlType::kPosition);
+    }
+    else if(extension_state == 2) {
+        r_extension_pid.SetReference(grab, ControlType::kPosition);
+    }
+    else {
+        double setpoint = r_operator.GetRightY();
+        if(r_extension_limit_front.Get() && setpoint < 0) {
+            r_extension.Set(0);
+        }
+        else if(r_extension_limit_back.Get() && setpoint > 0) {
+            r_extension.Set(0);
+        }
+        else {
+            r_extension.Set(setpoint);
+        }
     }
 }
 
 void Robot::box() {
-    if(r_operator.GetRightBumper()) {
+    if(r_driver.GetRightBumper()) {
         r_box.Set(true);
     }
-    if(r_operator.GetLeftBumper()) {
+    else {
         r_box.Set(false);
     }
 }

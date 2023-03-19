@@ -16,7 +16,19 @@ void Robot::RobotInit() {
   r_right_front.SetInverted(false);
   r_extension.SetInverted(true);
 
+  r_arm_pid.SetP(0.07);
+  r_arm_pid.SetI(0);
+  r_arm_pid.SetD(0);
+  r_arm_pid.SetFF(0);
+
+  r_extension_pid.SetP(0.05);
+  r_extension_pid.SetI(0);
+  r_extension_pid.SetD(0);
+  r_extension_pid.SetFF(0);
+
   r_compressor.EnableAnalog(60_psi, 120_psi);
+
+  r_gyro.SetYawAxis(ADIS16470_IMU::IMUAxis::kY);
 
   CameraServer::StartAutomaticCapture();
   CameraServer::StartAutomaticCapture();
@@ -24,27 +36,17 @@ void Robot::RobotInit() {
   r_auto_mode.SetDefaultOption("Charge Station", "Charge Station");
   r_auto_mode.AddOption("No Charge Station", "No Charge Station");
   SmartDashboard::PutData("Auto Mode", &r_auto_mode);
-
-  axis_chooser.AddOption("X", ADIS16470_IMU::IMUAxis::kX);
-  axis_chooser.AddOption("Y", ADIS16470_IMU::IMUAxis::kY);
-  axis_chooser.SetDefaultOption("Z", ADIS16470_IMU::IMUAxis::kZ);
-  SmartDashboard::PutData("Gyro Axis", &axis_chooser);
 }
 
 void Robot::RobotPeriodic() {
-  if(r_gyro.GetYawAxis() != axis_chooser.GetSelected()) {
-    r_gyro.SetYawAxis(axis_chooser.GetSelected());
-  }
   SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
   SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
-
-  SmartDashboard::PutNumber("Arm Limit Low", r_arm_limit_low.Get());
-  SmartDashboard::PutNumber("Arm Limit High", r_arm_limit_high.Get());
-  SmartDashboard::PutNumber("Extension Limit Back", r_extension_limit_back.Get());
-  SmartDashboard::PutNumber("Extension Limit Front", r_extension_limit_front.Get());
 }
 
-void Robot::AutonomousInit() {}
+void Robot::AutonomousInit() {
+  r_gyro.Reset();
+  //-80, -275
+}
 
 void Robot::AutonomousPeriodic() {}
 
@@ -62,7 +64,32 @@ void Robot::DisabledInit() {}
 
 void Robot::DisabledPeriodic() {}
 
-void Robot::TestInit() {}
+void Robot::TestInit() {
+  while(r_extension_limit_back.Get() == 0) {
+    r_extension.Set(0.2);
+  }
+  r_extension_encoder.SetPosition(0);
+  while(r_extension_encoder.GetPosition() > -10) {
+    r_extension.Set(-0.1);
+  }
+  while(r_extension_limit_back.Get() == 0) {
+    r_extension.Set(0.05);
+  }
+  r_extension.Set(0);
+  r_extension_encoder.SetPosition(0);
+  while(r_arm_limit_low.Get() == 0) {
+    r_arm.Set(0.2);
+  }
+  r_arm_encoder.SetPosition(0);
+  while(r_arm_encoder.GetPosition() > -5) {
+    r_arm.Set(-0.1);
+  }
+  while(r_arm_limit_low.Get() == 0) {
+    r_arm.Set(0.02);
+  }
+  r_arm.Set(0);
+  r_arm_encoder.SetPosition(0);
+}
 
 void Robot::TestPeriodic() {}
 

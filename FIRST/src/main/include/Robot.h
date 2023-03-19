@@ -14,6 +14,7 @@
 #include <frc/Compressor.h>
 #include <frc/Solenoid.h>
 #include <frc/DigitalInput.h>
+#include <frc/Timer.h>
 #include "rev/CANSparkMax.h"
 #include "rev/ColorSensorV3.h"
 
@@ -30,10 +31,10 @@ class Robot : public frc::TimedRobot {
   CustomController r_operator;
   CANSparkMax r_left_front;
   CANSparkMax r_left_back;
-  SparkMaxPIDController r_left_pid = r_left_front.GetPIDController();
+  SparkMaxRelativeEncoder r_left_encoder = r_left_front.GetEncoder();
   CANSparkMax r_right_front;
   CANSparkMax r_right_back;
-  SparkMaxPIDController r_right_pid = r_right_front.GetPIDController();
+  SparkMaxRelativeEncoder r_right_encoder = r_right_front.GetEncoder();
   CANSparkMax r_arm;
   SparkMaxRelativeEncoder r_arm_encoder = r_arm.GetEncoder();
   SparkMaxPIDController r_arm_pid = r_arm.GetPIDController();
@@ -42,8 +43,6 @@ class Robot : public frc::TimedRobot {
   SparkMaxPIDController r_extension_pid = r_extension.GetPIDController();
   DifferentialDrive r_drivetrain;
   ADIS16470_IMU r_gyro;
-  SendableChooser<std::string> r_auto_mode;
-  SendableChooser<ADIS16470_IMU::IMUAxis> axis_chooser;
   Compressor r_compressor;
   Solenoid r_box;
   Solenoid r_low_grabber;
@@ -52,7 +51,9 @@ class Robot : public frc::TimedRobot {
   DigitalInput r_arm_limit_high;
   DigitalInput r_extension_limit_back;
   DigitalInput r_extension_limit_front;
-  ColorSensorV3 r_color_sensor;
+  Timer timer;
+  SendableChooser<std::string> r_auto_mode;
+  //ColorSensorV3 r_color_sensor;
 
   Robot() :
   r_driver(Ports::driver),
@@ -71,8 +72,8 @@ class Robot : public frc::TimedRobot {
   r_arm_limit_low(Ports::arm_limit_low),
   r_arm_limit_high(Ports::arm_limit_high),
   r_extension_limit_back(Ports::extension_limit_back),
-  r_extension_limit_front(Ports::extension_limit_front),
-  r_color_sensor(Ports::color_sensor)
+  r_extension_limit_front(Ports::extension_limit_front)
+  //r_color_sensor(Ports::color_sensor)
   {}
 
   void RobotInit() override;
@@ -88,16 +89,15 @@ class Robot : public frc::TimedRobot {
   void SimulationInit() override;
   void SimulationPeriodic() override;
   
-  //Custom functions
+  //Custom functions and trackers
   void drivetrain();
   void arm();
   void extension();
   void box();
   void grabber();
-  
-  double GetLimelightValue(std::string);
-  std::vector<double> GetLimelightArray(std::string);
-  void SetLimelightValue(std::string, double);
+  int auto_state;
+  int arm_state;
+  int extension_state;
 
   private:
 };
