@@ -33,10 +33,10 @@ void Robot::arm() {
     */
     double grab = -1;
     
-    if(r_operator.GetLeftBumper()) {
+    if(r_operator.GetYButton()) {
         arm_state = 1;
     }
-    else if (r_operator.GetRightBumper()) {
+    else if (r_operator.GetAButton()) {
         arm_state = 2;
     }
     else {
@@ -75,10 +75,10 @@ void Robot::extension() {
     */
     double grab = -46;
 
-    if(r_operator.GetLeftBumper()) {
+    if(r_operator.GetYButton()) {
         extension_state = 1;
     }
-    else if (r_operator.GetRightBumper()) {
+    else if (r_operator.GetAButton()) {
         extension_state = 2;
     }
     else {
@@ -115,16 +115,28 @@ void Robot::box() {
 }
 
 void Robot::grabber() {
-    if(r_operator.GetAButton()) {
-        r_low_grabber.Set(true);
-        r_high_grabber.Set(false);
+    if(r_operator.GetLeftBumper()) {
+        grabber_open();
     }
-    if(r_operator.GetBButton()) {
-        r_low_grabber.Set(true);
-        r_high_grabber.Set(true);
+    else if(r_operator.GetRightBumper()) {
+        grabber_close_low();
     }
-    if(r_operator.GetYButton()) {
-        r_low_grabber.Set(false);
-        r_high_grabber.Set(false);
+    else if(r_operator.GetRightTriggerAxis()) {
+        grabber_close_high();
     }
+}
+
+void Robot::grabber_open() {
+    r_low_grabber.Set(true);
+    r_high_grabber.Set(false);
+}
+
+void Robot::grabber_close_low() {
+    r_low_grabber.Set(false);
+    r_high_grabber.Set(false);
+}
+
+void Robot::grabber_close_high() {
+    r_low_grabber.Set(false);
+    r_high_grabber.Set(true);
 }

@@ -95,6 +95,9 @@ class Robot : public frc::TimedRobot {
   void extension();
   void box();
   void grabber();
+  void grabber_open();
+  void grabber_close_low();
+  void grabber_close_high();
   int auto_state;
   int arm_state;
   int extension_state;

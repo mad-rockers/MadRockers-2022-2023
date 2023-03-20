@@ -44,11 +44,81 @@ void Robot::RobotPeriodic() {
 }
 
 void Robot::AutonomousInit() {
+  auto_state = 0;
+  r_left_encoder.SetPosition(0);
+  r_right_encoder.SetPosition(0);
   r_gyro.Reset();
-  //-80, -275
 }
 
-void Robot::AutonomousPeriodic() {}
+void Robot::AutonomousPeriodic() {
+  double arm_place = -80;
+  double extension_place = -275;
+  double drive_speed = 0.4;
+  double initial_back = -25;
+  double charge_forward = -10;
+  double balance_speed = 0.1;
+  units::degree_t balance_zone = 5_deg;
+  units::degrees_per_second_t balance_rate = 5_deg_per_s;
+  switch(auto_state) {
+    case 0:
+      r_arm_pid.SetReference(arm_place, ControlType::kPosition);
+      if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
+        auto_state++;
+      }
+      break;
+
+    case 1:
+      r_extension_pid.SetReference(extension_place, ControlType::kPosition);
+      if(abs(r_extension_encoder.GetPosition() - extension_place) < 1) {
+        auto_state++;
+      }
+      break;
+
+    case 2:
+      grabber_open();
+      r_extension_pid.SetReference(0, ControlType::kPosition);
+      r_left_front.Set(-drive_speed);
+      r_right_front.Set(-drive_speed);
+      if(r_extension_encoder.GetPosition() < 20) {
+        auto_state++;
+      }
+      break;
+    
+    case 3:
+      r_arm_pid.SetReference(0, ControlType::kPosition);
+      if(r_left_encoder.GetPosition() < initial_back) {
+        r_left_front.Set(0);
+        r_right_front.Set(0);
+        if(r_auto_mode.GetSelected() == "Charge Station") {
+          auto_state++;
+        }
+      }
+      break;
+
+    case 4:
+      r_left_front.Set(drive_speed);
+      r_right_front.Set(drive_speed);
+      if(r_left_encoder.GetPosition() > charge_forward) {
+        auto_state++;
+      }
+      break;
+
+    case 5:
+      if(r_gyro.GetAngle() < -balance_zone && r_gyro.GetRate() < balance_rate) {
+        r_left_front.Set(balance_speed);
+        r_right_front.Set(balance_speed);
+      }
+      else if(r_gyro.GetAngle() > balance_zone && r_gyro.GetRate() < balance_rate) {
+        r_left_front.Set(-balance_speed);
+        r_right_front.Set(-balance_speed);
+      }
+      else {
+        r_left_front.Set(0);
+        r_right_front.Set(0);
+      }
+      break;
+  }
+}
 
 void Robot::TeleopInit() {}
 
