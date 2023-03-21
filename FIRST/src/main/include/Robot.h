@@ -32,9 +32,11 @@ class Robot : public frc::TimedRobot {
   CANSparkMax r_left_front;
   CANSparkMax r_left_back;
   SparkMaxRelativeEncoder r_left_encoder = r_left_front.GetEncoder();
+  SparkMaxPIDController r_left_pid = r_left_front.GetPIDController();
   CANSparkMax r_right_front;
   CANSparkMax r_right_back;
   SparkMaxRelativeEncoder r_right_encoder = r_right_front.GetEncoder();
+  SparkMaxPIDController r_right_pid = r_right_front.GetPIDController();
   CANSparkMax r_arm;
   SparkMaxRelativeEncoder r_arm_encoder = r_arm.GetEncoder();
   SparkMaxPIDController r_arm_pid = r_arm.GetPIDController();
@@ -99,6 +101,10 @@ class Robot : public frc::TimedRobot {
   void grabber_close_low();
   void grabber_close_high();
   int auto_state;
+  double left_hold;
+  double right_hold;
+  double arm_hold;
+  double extension_hold;
   int arm_state;
   int extension_state;
 
