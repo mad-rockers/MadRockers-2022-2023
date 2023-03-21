@@ -43,8 +43,8 @@ void Robot::RobotInit() {
   CameraServer::StartAutomaticCapture();
   CameraServer::StartAutomaticCapture();
 
-  r_auto_mode.SetDefaultOption("Charge Station", "Charge Station");
-  r_auto_mode.AddOption("No Charge Station", "No Charge Station");
+  r_auto_mode.AddOption("Charge Station", "Charge Station");
+  r_auto_mode.SetDefaultOption("No Charge Station", "No Charge Station");
   SmartDashboard::PutData("Auto Mode", &r_auto_mode);
 }
 
