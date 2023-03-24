@@ -176,7 +176,14 @@ void Robot::AutonomousPeriodic() {
   }
 }
 
-void Robot::TeleopInit() {}
+void Robot::TeleopInit() {
+  arm_state = 0;
+  extension_state = 0;
+  arm_hold = 0;
+  extension_hold = 0;
+  r_left_front.SetInverted(true);
+  r_right_front.SetInverted(false);
+}
 
 void Robot::TeleopPeriodic() {
   drivetrain();

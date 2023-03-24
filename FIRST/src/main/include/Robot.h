@@ -43,7 +43,6 @@ class Robot : public frc::TimedRobot {
   CANSparkMax r_extension;
   SparkMaxRelativeEncoder r_extension_encoder = r_extension.GetEncoder();
   SparkMaxPIDController r_extension_pid = r_extension.GetPIDController();
-  DifferentialDrive r_drivetrain;
   ADIS16470_IMU r_gyro;
   Compressor r_compressor;
   Solenoid r_box;
@@ -55,7 +54,6 @@ class Robot : public frc::TimedRobot {
   DigitalInput r_extension_limit_front;
   Timer timer;
   SendableChooser<std::string> r_auto_mode;
-  //ColorSensorV3 r_color_sensor;
 
   Robot() :
   r_driver(Ports::driver),
@@ -66,7 +64,6 @@ class Robot : public frc::TimedRobot {
   r_right_back(Ports::right_back, CANSparkMax::MotorType::kBrushless),
   r_arm(Ports::arm, CANSparkMax::MotorType::kBrushless),
   r_extension(Ports::extension, CANSparkMax::MotorType::kBrushless),
-  r_drivetrain(r_left_front, r_right_front),
   r_compressor(Ports::PH, PneumaticsModuleType::REVPH),
   r_box(Ports::PH, PneumaticsModuleType::REVPH, Ports::box),
   r_low_grabber(Ports::PH, PneumaticsModuleType::REVPH, Ports::low_grabber),
@@ -75,7 +72,6 @@ class Robot : public frc::TimedRobot {
   r_arm_limit_high(Ports::arm_limit_high),
   r_extension_limit_back(Ports::extension_limit_back),
   r_extension_limit_front(Ports::extension_limit_front)
-  //r_color_sensor(Ports::color_sensor)
   {}
 
   void RobotInit() override;

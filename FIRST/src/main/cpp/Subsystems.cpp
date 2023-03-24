@@ -1,8 +1,9 @@
 #include "Robot.h"
+#include <frc/smartdashboard/SmartDashboard.h>
 
 void Robot::drivetrain() {
     float slow_speed = 0.3;
-    units::second_t accel_time = 2_s;
+    units::second_t accel_time = 1_s;
     float max_speed = 1;
 
     float speed;
@@ -12,6 +13,9 @@ void Robot::drivetrain() {
         }
         else if(timer.Get() < accel_time) {
             speed = double(timer.Get()) / double(accel_time) * (max_speed - slow_speed) + slow_speed;
+        }
+        else {
+            speed = 1;
         }
     }
     else {
@@ -34,12 +38,14 @@ void Robot::drivetrain() {
     }
     else {
         left_hold = 0;
-        r_drivetrain.TankDrive(left_power, right_power, false);
+        r_left_front.Set(left_power);
+        r_right_front.Set(right_power);
     }
 
     if(r_driver.GetAButton()) {
-        r_left_encoder.SetPosition(0);
-        r_right_encoder.SetPosition(0);
+        while(r_driver.GetAButton()) {}
+        r_left_front.SetInverted(!r_left_front.GetInverted());
+        r_right_front.SetInverted(!r_right_front.GetInverted());
     }
 }
 
