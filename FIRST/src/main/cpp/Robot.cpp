@@ -49,9 +49,6 @@ void Robot::RobotInit() {
 }
 
 void Robot::RobotPeriodic() {
-  SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
-  SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
-
   SmartDashboard::PutNumber("Left", r_left_encoder.GetPosition());
   SmartDashboard::PutNumber("Right", r_right_encoder.GetPosition());
   SmartDashboard::PutNumber("Arm", r_arm_encoder.GetPosition());
@@ -59,6 +56,7 @@ void Robot::RobotPeriodic() {
 }
 
 void Robot::AutonomousInit() {
+  stop_all();
   auto_state = 0;
   r_left_encoder.SetPosition(0);
   r_right_encoder.SetPosition(0);
@@ -75,26 +73,25 @@ void Robot::AutonomousPeriodic() {
     extension_place = -300;
   }
   else {
-    arm_place = -75;
+    arm_place = -85;
     extension_place = -270;
   }
-  double drive_speed = 0.3;
+  double drive_speed = 0.2;
   double initial_back = 70;
-  double charge_forward = 35;
+  double charge_forward = 37;
   double balance_speed = 0.1;
   units::degree_t balance_zone = 5_deg;
   double balance_rate = 10;
   switch(auto_state) {
     case 0:
-      if(r_auto_mode.GetSelected() == "Charge Station") {
-        auto_state++;
-        break;
+      r_extension_pid.SetReference(0, ControlType::kPosition);
+      if(r_auto_mode.GetSelected() == "No Charge Station") {
+        grabber_close_high();
       }
-      grabber_close_high();
       if(timer.Get() == 0_s) {
         timer.Start();
       }
-      if(timer.Get() > 0.5_s) {
+      if(timer.Get() > 1_s) {
         timer.Stop();
         timer.Reset();
         auto_state++;
@@ -146,8 +143,8 @@ void Robot::AutonomousPeriodic() {
       break;
 
     case 6:
-      r_left_front.Set(-drive_speed);
-      r_right_front.Set(-drive_speed);
+      r_left_front.Set(-drive_speed - 0.05);
+      r_right_front.Set(-drive_speed - 0.05);
       if(r_left_encoder.GetPosition() < charge_forward) {
         auto_state++;
       }
@@ -177,6 +174,7 @@ void Robot::AutonomousPeriodic() {
 }
 
 void Robot::TeleopInit() {
+  stop_all();
   arm_state = 0;
   extension_state = 0;
   arm_hold = 0;
@@ -222,6 +220,8 @@ void Robot::TestInit() {
   }
   r_arm.Set(0);
   r_arm_encoder.SetPosition(0);
+  r_arm_pid.SetReference(-2, ControlType::kPosition);
+  r_extension_pid.SetReference(-45, ControlType::kPosition);
 }
 
 void Robot::TestPeriodic() {}

@@ -88,6 +88,7 @@ class Robot : public frc::TimedRobot {
   void SimulationPeriodic() override;
   
   //Custom functions and trackers
+  void stop_all();
   void drivetrain();
   void arm();
   void extension();

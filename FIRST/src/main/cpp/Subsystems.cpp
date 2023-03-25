@@ -1,6 +1,13 @@
 #include "Robot.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+void Robot::stop_all() {
+    r_left_front.Set(0);
+    r_right_front.Set(0);
+    r_arm.Set(0);
+    r_extension.Set(0);
+}
+
 void Robot::drivetrain() {
     float slow_speed = 0.3;
     units::second_t accel_time = 1_s;
@@ -122,7 +129,7 @@ void Robot::extension() {
     }
     else {
         double setpoint = r_operator.GetRightY();
-        if(r_extension_limit_front.Get() && setpoint < 0) {
+        if(r_extension_encoder.GetPosition() < -274 && setpoint < 0) {
             r_extension.Set(0);
         }
         else if(r_extension_limit_back.Get() && setpoint > 0) {
