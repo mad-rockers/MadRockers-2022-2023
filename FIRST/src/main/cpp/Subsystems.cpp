@@ -32,8 +32,14 @@ void Robot::drivetrain() {
     }
 
     float left_power, right_power;
-    left_power = r_driver.GetLeftY() * speed;
-    right_power = r_driver.GetRightY() * speed;
+    if(r_left_front.GetInverted()) {
+        left_power = r_driver.GetLeftY() * speed;
+        right_power = r_driver.GetRightY() * speed;
+    }
+    else {
+        left_power = r_driver.GetRightY() * speed;
+        right_power = r_driver.GetLeftY() * speed;
+    }
 
     if(left_power == 0 && right_power == 0 && r_driver.GetRightTriggerAxis()) {
         if(left_hold == 0) {
@@ -75,7 +81,7 @@ void Robot::arm() {
         arm_state = 0;
     }
 
-    if(arm_state == 1) {
+    if(arm_state == 1 && r_extension_encoder.GetPosition() > -10) {
         r_arm_pid.SetReference(0, ControlType::kPosition);
     }
     else if(arm_state == 2) {
