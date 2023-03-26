@@ -16,12 +16,12 @@ void Robot::RobotInit() {
   r_right_front.SetInverted(false);
   r_extension.SetInverted(true);
 
-  r_left_pid.SetP(0.08);
+  r_left_pid.SetP(0.1);
   r_left_pid.SetI(0);
   r_left_pid.SetD(0);
   r_left_pid.SetFF(0);
 
-  r_right_pid.SetP(0.08);
+  r_right_pid.SetP(0.1);
   r_right_pid.SetI(0);
   r_right_pid.SetD(0);
   r_right_pid.SetFF(0);
@@ -70,13 +70,13 @@ void Robot::AutonomousPeriodic() {
   double extension_place;
   if(r_auto_mode.GetSelected() == "Charge Station") {
     arm_place = -75;
-    extension_place = -300;
+    extension_place = -275;
   }
   else {
     arm_place = -85;
-    extension_place = -270;
+    extension_place = -275;
   }
-  double drive_speed = 0.2;
+  double drive_speed = 0.4;
   double initial_back = 70;
   double charge_forward = 37;
   double balance_speed = 0.1;
@@ -87,14 +87,23 @@ void Robot::AutonomousPeriodic() {
       r_extension_pid.SetReference(0, ControlType::kPosition);
       if(r_auto_mode.GetSelected() == "No Charge Station") {
         grabber_close_high();
+        if(timer.Get() == 0_s) {
+          timer.Start();
+        }
+        if(timer.Get() > 1_s) {
+          timer.Stop();
+          timer.Reset();
+          auto_state++;
+        }
       }
-      if(timer.Get() == 0_s) {
-        timer.Start();
-      }
-      if(timer.Get() > 1_s) {
-        timer.Stop();
-        timer.Reset();
-        auto_state++;
+      else {
+        r_left_front.Set(balance_speed);
+        r_right_front.Set(balance_speed);
+        if(r_left_encoder.GetPosition() > 2) {
+          r_left_front.Set(0);
+          r_right_front.Set(0);
+          auto_state++;
+        }
       }
       break;
     
