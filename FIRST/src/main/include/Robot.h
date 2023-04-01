@@ -52,7 +52,8 @@ class Robot : public frc::TimedRobot {
   DigitalInput r_arm_limit_high;
   DigitalInput r_extension_limit_back;
   DigitalInput r_extension_limit_front;
-  Timer timer;
+  Timer timer1;
+  Timer timer2;
   SendableChooser<std::string> r_auto_mode;
 
   Robot() :

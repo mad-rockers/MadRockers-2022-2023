@@ -6,28 +6,35 @@ void Robot::stop_all() {
     r_right_front.Set(0);
     r_arm.Set(0);
     r_extension.Set(0);
+    r_box.Set(false);
+    timer1.Stop();
+    timer1.Reset();
+    timer2.Stop();
+    timer2.Reset();
 }
 
 void Robot::drivetrain() {
     float slow_speed = 0.3;
-    units::second_t accel_time = 1_s;
     float max_speed = 1;
+    units::second_t accel_time = 0.75_s;
+    units::second_t deccel_time = 0.75_s;
+    float deccel_trigger = 0;
 
     float speed;
     if(r_driver.GetLeftBumper()) {
-        if(timer.Get() == 0_s) {
-            timer.Start();
+        if(timer1.Get() == 0_s) {
+            timer1.Start();
         }
-        else if(timer.Get() < accel_time) {
-            speed = double(timer.Get()) / double(accel_time) * (max_speed - slow_speed) + slow_speed;
+        else if(timer1.Get() < accel_time) {
+            speed = double(timer1.Get()) / double(accel_time) * (max_speed - slow_speed) + slow_speed;
         }
         else {
-            speed = 1;
+            speed = max_speed;
         }
     }
     else {
-        timer.Stop();
-        timer.Reset();
+        timer1.Stop();
+        timer1.Reset();
         speed = slow_speed;
     }
 
@@ -39,6 +46,30 @@ void Robot::drivetrain() {
     else {
         left_power = r_driver.GetRightY() * speed;
         right_power = r_driver.GetLeftY() * speed;
+    }
+
+    if(left_power == 0 && right_power == 0) {
+        if(r_left_encoder.GetVelocity() > deccel_trigger || r_right_encoder.GetVelocity() > deccel_trigger) {
+            timer2.Start();
+        }
+    }
+    else {
+        timer2.Stop();
+        timer2.Reset();
+    }
+    if(timer2.Get() > 0_s && timer2.Get() < deccel_time) {
+        if(left_power > 0) {
+            left_power = (float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
+        }
+        else {
+            left_power = -(float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
+        }
+        if(right_power > 0) {
+            right_power = (float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
+        }
+        else {
+            right_power = -(float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
+        }
     }
 
     if(left_power == 0 && right_power == 0 && r_driver.GetRightTriggerAxis()) {
@@ -55,11 +86,11 @@ void Robot::drivetrain() {
         r_right_front.Set(right_power);
     }
 
-    if(r_driver.GetAButton()) {
+    /*if(r_driver.GetAButton()) {
         while(r_driver.GetAButton()) {}
         r_left_front.SetInverted(!r_left_front.GetInverted());
         r_right_front.SetInverted(!r_right_front.GetInverted());
-    }
+    }*/
 }
 
 void Robot::arm() {

@@ -41,7 +41,6 @@ void Robot::RobotInit() {
   r_gyro.SetYawAxis(ADIS16470_IMU::IMUAxis::kY);
 
   CameraServer::StartAutomaticCapture();
-  CameraServer::StartAutomaticCapture();
 
   r_auto_mode.AddOption("Charge Station", "Charge Station");
   r_auto_mode.SetDefaultOption("No Charge Station", "No Charge Station");
@@ -61,8 +60,8 @@ void Robot::AutonomousInit() {
   r_left_encoder.SetPosition(0);
   r_right_encoder.SetPosition(0);
   r_gyro.Reset();
-  timer.Stop();
-  timer.Reset();
+  timer1.Stop();
+  timer1.Reset();
 }
 
 void Robot::AutonomousPeriodic() {
@@ -70,13 +69,13 @@ void Robot::AutonomousPeriodic() {
   double extension_place;
   if(r_auto_mode.GetSelected() == "Charge Station") {
     arm_place = -75;
-    extension_place = -275;
+    extension_place = -280;
   }
   else {
     arm_place = -85;
     extension_place = -275;
   }
-  double drive_speed = 0.4;
+  double drive_speed = 0.2;
   double initial_back = 70;
   double charge_forward = 37;
   double balance_speed = 0.1;
@@ -87,23 +86,13 @@ void Robot::AutonomousPeriodic() {
       r_extension_pid.SetReference(0, ControlType::kPosition);
       if(r_auto_mode.GetSelected() == "No Charge Station") {
         grabber_close_high();
-        if(timer.Get() == 0_s) {
-          timer.Start();
-        }
-        if(timer.Get() > 1_s) {
-          timer.Stop();
-          timer.Reset();
-          auto_state++;
-        }
       }
-      else {
-        r_left_front.Set(balance_speed);
-        r_right_front.Set(balance_speed);
-        if(r_left_encoder.GetPosition() > 2) {
-          r_left_front.Set(0);
-          r_right_front.Set(0);
-          auto_state++;
-        }
+      r_left_front.Set(drive_speed);
+      r_right_front.Set(drive_speed);
+      if(r_left_encoder.GetPosition() > 2) {
+        r_left_front.Set(0);
+        r_right_front.Set(0);
+        auto_state++;
       }
       break;
     
@@ -123,18 +112,24 @@ void Robot::AutonomousPeriodic() {
 
     case 3:
       grabber_open();
-      if(timer.Get() == 0_s) {
-        timer.Start();
+      if(timer1.Get() == 0_s) {
+        timer1.Start();
       }
-      if(timer.Get() > 0.5_s) {
+      if(timer1.Get() > 0.5_s) {
         auto_state++;
       }
       break;
     
     case 4:
       r_extension_pid.SetReference(0, ControlType::kPosition);
-      r_left_front.Set(drive_speed);
-      r_right_front.Set(drive_speed);
+      if(r_left_encoder.GetPosition() > charge_forward) {
+        r_left_front.Set(drive_speed);
+        r_right_front.Set(drive_speed);
+      }
+      else {
+        r_left_front.Set(drive_speed + 0.2);
+        r_right_front.Set(drive_speed + 0.2);
+      }
       if(r_extension_encoder.GetPosition() > -20) {
         auto_state++;
       }
@@ -149,11 +144,19 @@ void Robot::AutonomousPeriodic() {
           auto_state++;
         }
       }
+      else if(r_left_encoder.GetPosition() > charge_forward) {
+        r_left_front.Set(drive_speed);
+        r_right_front.Set(drive_speed);
+      }
+      else {
+        r_left_front.Set(drive_speed + 0.2);
+        r_right_front.Set(drive_speed + 0.2);
+      }
       break;
 
     case 6:
-      r_left_front.Set(-drive_speed - 0.05);
-      r_right_front.Set(-drive_speed - 0.05);
+      r_left_front.Set(-drive_speed - 0.2);
+      r_right_front.Set(-drive_speed - 0.2);
       if(r_left_encoder.GetPosition() < charge_forward) {
         auto_state++;
       }
