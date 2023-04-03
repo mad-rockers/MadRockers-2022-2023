@@ -14,11 +14,12 @@ void Robot::stop_all() {
 }
 
 void Robot::drivetrain() {
+    const float maxRPM = 5000;
     float slow_speed = 0.3;
     float max_speed = 1;
     units::second_t accel_time = 0.75_s;
     units::second_t deccel_time = 0.75_s;
-    float deccel_trigger = 0;
+    float deccel_trigger = 1700;
 
     float speed;
     if(r_driver.GetLeftBumper()) {
@@ -49,7 +50,7 @@ void Robot::drivetrain() {
     }
 
     if(left_power == 0 && right_power == 0) {
-        if(r_left_encoder.GetVelocity() > deccel_trigger || r_right_encoder.GetVelocity() > deccel_trigger) {
+        if(abs(r_left_encoder.GetVelocity()) > deccel_trigger || abs(r_right_encoder.GetVelocity()) > deccel_trigger) {
             timer2.Start();
         }
     }
@@ -58,18 +59,10 @@ void Robot::drivetrain() {
         timer2.Reset();
     }
     if(timer2.Get() > 0_s && timer2.Get() < deccel_time) {
-        if(left_power > 0) {
-            left_power = (float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
-        }
-        else {
-            left_power = -(float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
-        }
-        if(right_power > 0) {
-            right_power = (float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
-        }
-        else {
-            right_power = -(float(deccel_time) - timer2.Get()) / float(deccel_time) * 0.3;
-        }
+        float l_setting = r_left_encoder.GetVelocity() / maxRPM;
+        float r_setting = r_right_encoder.GetVelocity() / maxRPM;
+        left_power = (float(deccel_time) - float(timer2.Get())) / float(deccel_time) * l_setting;
+        right_power = (float(deccel_time) - float(timer2.Get())) / float(deccel_time) * r_setting;
     }
 
     if(left_power == 0 && right_power == 0 && r_driver.GetRightTriggerAxis()) {

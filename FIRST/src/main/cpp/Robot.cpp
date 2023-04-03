@@ -10,6 +10,8 @@
 #include <cameraserver/CameraServer.h>
 
 void Robot::RobotInit() {
+  r_driver.SetSquareScale(true);
+
   r_left_back.Follow(r_left_front);
   r_right_back.Follow(r_right_front);
   r_left_front.SetInverted(true);
@@ -50,6 +52,8 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("Left", r_left_encoder.GetPosition());
   SmartDashboard::PutNumber("Right", r_right_encoder.GetPosition());
+  SmartDashboard::PutNumber("Left V", r_left_encoder.GetVelocity());
+  SmartDashboard::PutNumber("Right V", r_right_encoder.GetVelocity());
   SmartDashboard::PutNumber("Arm", r_arm_encoder.GetPosition());
   SmartDashboard::PutNumber("Extension", r_extension_encoder.GetPosition());
 }
@@ -57,6 +61,7 @@ void Robot::RobotPeriodic() {
 void Robot::AutonomousInit() {
   stop_all();
   auto_state = 0;
+  left_hold = 0;
   r_left_encoder.SetPosition(0);
   r_right_encoder.SetPosition(0);
   r_gyro.Reset();
@@ -69,11 +74,11 @@ void Robot::AutonomousPeriodic() {
   double extension_place;
   if(r_auto_mode.GetSelected() == "Charge Station") {
     arm_place = -75;
-    extension_place = -280;
+    extension_place = -275;
   }
   else {
     arm_place = -85;
-    extension_place = -275;
+    extension_place = -280;
   }
   double drive_speed = 0.2;
   double initial_back = 70;
