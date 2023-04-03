@@ -26,7 +26,7 @@ void Robot::drivetrain() {
         if(timer1.Get() == 0_s) {
             timer1.Start();
         }
-        else if(timer1.Get() < accel_time) {
+        if(timer1.Get() < accel_time) {
             speed = double(timer1.Get()) / double(accel_time) * (max_speed - slow_speed) + slow_speed;
         }
         else {
