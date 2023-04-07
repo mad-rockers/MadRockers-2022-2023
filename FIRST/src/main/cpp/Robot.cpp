@@ -52,10 +52,10 @@ void Robot::RobotInit() {
 void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("Left", r_left_encoder.GetPosition());
   SmartDashboard::PutNumber("Right", r_right_encoder.GetPosition());
-  SmartDashboard::PutNumber("Left V", r_left_encoder.GetVelocity());
-  SmartDashboard::PutNumber("Right V", r_right_encoder.GetVelocity());
   SmartDashboard::PutNumber("Arm", r_arm_encoder.GetPosition());
   SmartDashboard::PutNumber("Extension", r_extension_encoder.GetPosition());
+  SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
+  SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
 }
 
 void Robot::AutonomousInit() {
@@ -72,20 +72,23 @@ void Robot::AutonomousInit() {
 void Robot::AutonomousPeriodic() {
   double arm_place;
   double extension_place;
+  double initial_back;
   if(r_auto_mode.GetSelected() == "Charge Station") {
     arm_place = -75;
-    extension_place = -275;
+    extension_place = -280;
+    initial_back = 0;
   }
   else {
-    arm_place = -85;
-    extension_place = -280;
+    arm_place = -80;
+    extension_place = -300;
+    initial_back = 1;
   }
-  double drive_speed = 0.2;
-  double initial_back = 70;
-  double charge_forward = 37;
+  double drive_speed = 0.4;
+  double full_back = 75;
+  double charge_back = 38;
   double balance_speed = 0.1;
-  units::degree_t balance_zone = 5_deg;
-  double balance_rate = 10;
+  units::degree_t balance_zone = 3_deg;
+  double balance_rate = 5;
   switch(auto_state) {
     case 0:
       r_extension_pid.SetReference(0, ControlType::kPosition);
@@ -94,7 +97,7 @@ void Robot::AutonomousPeriodic() {
       }
       r_left_front.Set(drive_speed);
       r_right_front.Set(drive_speed);
-      if(r_left_encoder.GetPosition() > 2) {
+      if(r_left_encoder.GetPosition() >= initial_back) {
         r_left_front.Set(0);
         r_right_front.Set(0);
         auto_state++;
@@ -116,6 +119,16 @@ void Robot::AutonomousPeriodic() {
       break;
 
     case 3:
+      if(r_auto_mode.GetSelected() == "Charge Station") {
+        auto_state++;
+      }
+      r_arm_pid.SetReference(-72, ControlType::kPosition);
+      if(abs(r_arm_encoder.GetPosition() + 72) < 1) {
+        auto_state++;
+      }
+      break;
+
+    case 4:
       grabber_open();
       if(timer1.Get() == 0_s) {
         timer1.Start();
@@ -125,49 +138,31 @@ void Robot::AutonomousPeriodic() {
       }
       break;
     
-    case 4:
+    case 5:
       r_extension_pid.SetReference(0, ControlType::kPosition);
-      if(r_left_encoder.GetPosition() > charge_forward) {
+      if(r_extension_encoder.GetPosition() > -20) {
+        r_arm_pid.SetReference(0, ControlType::kPosition);
+      }
+
+      if((r_left_encoder.GetPosition() < charge_back && r_auto_mode.GetSelected() == "Charge Station")
+      || (r_left_encoder.GetPosition() < full_back && r_auto_mode.GetSelected() == "No Charge Station")) {
         r_left_front.Set(drive_speed);
         r_right_front.Set(drive_speed);
       }
       else {
-        r_left_front.Set(drive_speed + 0.2);
-        r_right_front.Set(drive_speed + 0.2);
-      }
-      if(r_extension_encoder.GetPosition() > -20) {
-        auto_state++;
-      }
-      break;
-    
-    case 5:
-      r_arm_pid.SetReference(0, ControlType::kPosition);
-      if(r_left_encoder.GetPosition() > initial_back) {
         r_left_front.Set(0);
         r_right_front.Set(0);
         if(r_auto_mode.GetSelected() == "Charge Station") {
           auto_state++;
         }
       }
-      else if(r_left_encoder.GetPosition() > charge_forward) {
-        r_left_front.Set(drive_speed);
-        r_right_front.Set(drive_speed);
-      }
-      else {
-        r_left_front.Set(drive_speed + 0.2);
-        r_right_front.Set(drive_speed + 0.2);
-      }
       break;
-
+    
     case 6:
-      r_left_front.Set(-drive_speed - 0.2);
-      r_right_front.Set(-drive_speed - 0.2);
-      if(r_left_encoder.GetPosition() < charge_forward) {
-        auto_state++;
+      if(r_extension_encoder.GetPosition() > -20) {
+        r_arm_pid.SetReference(0, ControlType::kPosition);
       }
-      break;
 
-    case 7:
       if(r_gyro.GetAngle() < -balance_zone && abs(double(r_gyro.GetRate())) < balance_rate) {
         r_left_front.Set(balance_speed);
         r_right_front.Set(balance_speed);
@@ -213,6 +208,7 @@ void Robot::DisabledInit() {}
 void Robot::DisabledPeriodic() {}
 
 void Robot::TestInit() {
+  stop_all();
   while(r_extension_limit_back.Get() == 0) {
     r_extension.Set(0.2);
   }
