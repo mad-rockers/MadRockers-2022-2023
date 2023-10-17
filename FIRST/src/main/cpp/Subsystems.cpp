@@ -31,8 +31,7 @@ void Robot::drivetrain() {
 
     float speed;
 
-    /* temporarily removing ability to use max speed
-    if(r_driver.GetLeftBumper()) {
+    if(r_operator.GetLeftBumper()) {
         if(timer1.Get() == 0_s) {
             timer1.Start();
         }
@@ -48,13 +47,7 @@ void Robot::drivetrain() {
         timer1.Reset();
         speed = slow_speed;
     }
-    */
-
-   //Temporarily statically setting to slow speed
-
-    timer1.Stop();
-    timer1.Reset();
-    speed = slow_speed;
+    
 
     float left_power, right_power;
     if(r_left_front.GetInverted()) {
@@ -177,18 +170,18 @@ void Robot::extension() {
     */
     double grab = -46;
 
-    if(r_driver.GetSquareButton()) {
+    if(r_operator.GetXButton()) {
         extension_state = 1;
     }
-    else if(r_driver.GetCircleButton()) {
+    else if(r_operator.GetBButton()) {
         extension_state = 2;
     }
 
-    /*
-    else if(r_driver.GetRightY() != 0) {
+    
+    else if(r_operator.GetRightY() != 0) {
         extension_state = 0;
     }
-    */
+    
 
     if(extension_state == 1) {
         r_extension_pid.SetReference(0, ControlType::kPosition);
@@ -232,17 +225,17 @@ Right bumper closes the grabber low
 Right trigger axis 
 */
 void Robot::grabber() {
-    if(r_driver.GetL2Button()) {
+    if(r_operator.GetLeftBumper()) {
         grabber_open();
     }
-    else if(r_driver.GetR2Button()) {
+    else if(r_operator.GetRightBumper()) {
         grabber_close_low();
     }
-    /*
-    else if(r_driver.GetRightTriggerAxis()) {
+    
+    else if(r_operator.GetRightTriggerAxis()) {
         grabber_close_high();
     }
-    */
+    
 }
 
 // This function opens a grabber mechanism.
