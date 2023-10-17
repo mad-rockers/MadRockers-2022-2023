@@ -1,6 +1,10 @@
 #include "Robot.h"
 #include <frc/smartdashboard/SmartDashboard.h>
 
+/* 
+This function stops all robot components, 
+resets timers, and sets various motors and controls to their default values.
+*/
 void Robot::stop_all() {
     r_left_front.Set(0);
     r_right_front.Set(0);
@@ -13,6 +17,10 @@ void Robot::stop_all() {
     timer2.Reset();
 }
 
+/* 
+This function controls the robot's drivetrain, including velocity control, acceleration, 
+and deceleration.
+*/
 void Robot::drivetrain() {
     const float maxRPM = 5000;
     float slow_speed = 0.3;
@@ -22,6 +30,8 @@ void Robot::drivetrain() {
     float deccel_trigger = 1700;
 
     float speed;
+
+    /* temporarily removing ability to use max speed
     if(r_driver.GetLeftBumper()) {
         if(timer1.Get() == 0_s) {
             timer1.Start();
@@ -38,6 +48,13 @@ void Robot::drivetrain() {
         timer1.Reset();
         speed = slow_speed;
     }
+    */
+
+   //Temporarily statically setting to slow speed
+
+    timer1.Stop();
+    timer1.Reset();
+    speed = slow_speed;
 
     float left_power, right_power;
     if(r_left_front.GetInverted()) {
@@ -65,6 +82,7 @@ void Robot::drivetrain() {
         right_power = (float(deccel_time) - float(timer2.Get())) / float(deccel_time) * r_setting;
     }
 
+    /* temporarily disabling
     if(left_power == 0 && right_power == 0 && r_driver.GetRightTriggerAxis()) {
         if(left_hold == 0) {
             left_hold = r_left_encoder.GetPosition();
@@ -78,6 +96,7 @@ void Robot::drivetrain() {
         r_left_front.Set(left_power);
         r_right_front.Set(right_power);
     }
+    */
 
     /*if(r_driver.GetAButton()) {
         while(r_driver.GetAButton()) {}
@@ -86,6 +105,15 @@ void Robot::drivetrain() {
     }*/
 }
 
+/*
+This function controls the robot's arm mechanism, allowing for various states, 
+such as normal control, zero position, and grabbing position.
+
+Triangle button moves arm to 0 position
+Cross button moves arm to grabbing position
+When left stick is moved vertically (y axis) sets arm to normal control
+
+*/
 void Robot::arm() {
     /*
     Arm States:
@@ -95,13 +123,13 @@ void Robot::arm() {
     */
     double grab = -1;
     
-    if(r_operator.GetYButton()) {
+    if(r_driver.GetTriangleButton()) {
         arm_state = 1;
     }
-    else if(r_operator.GetAButton()) {
+    else if(r_driver.GetCrossButton()) {
         arm_state = 2;
     }
-    else if(r_operator.GetLeftY() != 0) {
+    else if(r_driver.GetLeftY() != 0) {
         arm_state = 0;
     }
 
@@ -112,7 +140,7 @@ void Robot::arm() {
         r_arm_pid.SetReference(grab, ControlType::kPosition);
     }
     else {
-        double setpoint = r_operator.GetLeftY() * 0.5;
+        double setpoint = r_driver.GetLeftY() * 0.5;
         if(r_arm_limit_high.Get() && setpoint < 0) {
             r_arm.Set(0);
         }
@@ -132,6 +160,14 @@ void Robot::arm() {
     }
 }
 
+/*
+This function controls the robot's extension mechanism, including different states 
+like zero position and grabbing position.
+
+Square button moves extension to 0 position
+When right stick is moved vertically (y axis) sets extension to normal control
+Circle button moved extention to grabbin position
+*/
 void Robot::extension() {
     /*
     Extension States:
@@ -141,15 +177,18 @@ void Robot::extension() {
     */
     double grab = -46;
 
-    if(r_operator.GetYButton()) {
+    if(r_driver.GetSquareButton()) {
         extension_state = 1;
     }
-    else if(r_operator.GetAButton()) {
+    else if(r_driver.GetCircleButton()) {
         extension_state = 2;
     }
-    else if(r_operator.GetRightY() != 0) {
+
+    /*
+    else if(r_driver.GetRightY() != 0) {
         extension_state = 0;
     }
+    */
 
     if(extension_state == 1) {
         r_extension_pid.SetReference(0, ControlType::kPosition);
@@ -158,7 +197,7 @@ void Robot::extension() {
         r_extension_pid.SetReference(grab, ControlType::kPosition);
     }
     else {
-        double setpoint = r_operator.GetRightY();
+        double setpoint = r_driver.GetRightY();
         if(r_extension_encoder.GetPosition() < -274 && setpoint < 0) {
             r_extension.Set(0);
         }
@@ -171,8 +210,13 @@ void Robot::extension() {
     }
 }
 
+/*
+This function controls a box mechanism used to drop off items
+
+R1 moves the dumping box
+*/
 void Robot::box() {
-    if(r_driver.GetRightBumper()) {
+    if(r_driver.GetR1Button()) {
         r_box.Set(true);
     }
     else {
@@ -180,28 +224,39 @@ void Robot::box() {
     }
 }
 
+
+/*This function handles a grabber mechanism and opens or closes it based on user input.
+
+Left bumper opens the grabber
+Right bumper closes the grabber low
+Right trigger axis 
+*/
 void Robot::grabber() {
-    if(r_operator.GetLeftBumper()) {
+    if(r_driver.GetL2Button()) {
         grabber_open();
     }
-    else if(r_operator.GetRightBumper()) {
+    else if(r_driver.GetR2Button()) {
         grabber_close_low();
     }
-    else if(r_operator.GetRightTriggerAxis()) {
+    /*
+    else if(r_driver.GetRightTriggerAxis()) {
         grabber_close_high();
     }
+    */
 }
 
+// This function opens a grabber mechanism.
 void Robot::grabber_open() {
     r_low_grabber.Set(true);
     r_high_grabber.Set(false);
 }
 
+// This function closes a grabber mechanism in a low position.
 void Robot::grabber_close_low() {
     r_low_grabber.Set(false);
     r_high_grabber.Set(false);
 }
-
+// This function closes a grabber mechanism in a high position.
 void Robot::grabber_close_high() {
     r_low_grabber.Set(false);
     r_high_grabber.Set(true);

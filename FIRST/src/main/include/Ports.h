@@ -1,7 +1,6 @@
 namespace Ports {
     //USB
     const int driver = 0;
-    const int r_operator = 1;
 
     //CAN
     const int PH = 1;

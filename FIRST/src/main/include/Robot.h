@@ -27,7 +27,6 @@ using namespace rev;
 class Robot : public frc::TimedRobot {
  public:
   CustomController r_driver;
-  CustomController r_operator;
   CANSparkMax r_left_front;
   CANSparkMax r_left_back;
   SparkMaxRelativeEncoder r_left_encoder = r_left_front.GetEncoder();
@@ -57,7 +56,6 @@ class Robot : public frc::TimedRobot {
 
   Robot() :
   r_driver(Ports::driver),
-  r_operator(Ports::r_operator),
   r_left_front(Ports::left_front, CANSparkMax::MotorType::kBrushless),
   r_left_back(Ports::left_back, CANSparkMax::MotorType::kBrushless),
   r_right_front(Ports::right_front, CANSparkMax::MotorType::kBrushless),
