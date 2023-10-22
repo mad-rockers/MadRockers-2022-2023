@@ -147,7 +147,7 @@ void Robot::AutonomousPeriodic() {
       The GetPosition() command returns how many rotations the MOTOR has rotated from the 0 point.*/
       if(abs(r_arm_encoder.GetPosition() - arm_place_low) < tolerance) {
         
-        //auto_state = 1;
+        auto_state = 1;
         break;
       }
       break;
