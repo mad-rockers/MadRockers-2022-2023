@@ -31,7 +31,7 @@ void Robot::RobotInit() {
   r_right_pid.SetD(0);
   r_right_pid.SetFF(0);
 
-  r_arm_pid.SetP(0.07);
+  r_arm_pid.SetP(0.07); /* I believe that lowering this value will slow down the movement of the arm */
   r_arm_pid.SetI(0);
   r_arm_pid.SetD(0);
   r_arm_pid.SetFF(0);
@@ -138,6 +138,19 @@ void Robot::AutonomousPeriodic() {
       break;
 
     case 2:
+      //sleep for 0.5 seconds
+      if(timer1.Get() == 0_s) {
+        timer1.Start();
+      }
+      //if (timer1.Get() > 1.0_s) {
+      if(timer1.Get() > 0.5_s) {
+        timer1.Stop();
+        timer1.Reset();
+        auto_state++;
+      }
+      break;
+
+    case 3:
       // This is moving to the low arm position
       r_arm_pid.SetReference(arm_place_low, ControlType::kPosition);
 
@@ -146,9 +159,21 @@ void Robot::AutonomousPeriodic() {
       If I need to get the position that a motor is currently in, I can do so by using its built-in encoder.
       The GetPosition() command returns how many rotations the MOTOR has rotated from the 0 point.*/
       if(abs(r_arm_encoder.GetPosition() - arm_place_low) < tolerance) {
-        
-        auto_state = 1;
+        auto_state++;
         break;
+      }
+      break;
+
+      case 4:
+      //sleep for 0.5 seconds
+      if(timer1.Get() == 0_s) {
+        timer1.Start();
+      }
+      //if (timer1.Get() > 1.0_s) {
+      if(timer1.Get() > 0.5_s) {
+        timer1.Stop();
+        timer1.Reset();
+        auto_state = 1;
       }
       break;
 
