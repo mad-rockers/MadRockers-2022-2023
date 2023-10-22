@@ -116,6 +116,31 @@ void Robot::AutonomousPeriodic() {
       While this is happening, pull back the extension and lower the arm.
   6 - If going on the charge station, run the balancing routine.
   */
+
+  /*
+      Notes:
+      - SetPosition() is called on r_arm_ENCODER and sets the position of the encoder
+      - SetReference() is called on r_arm_PID and sets the controller reference value
+      - Set() is called on r_arm and sets the speed of the controller
+
+      Ideas: (I think the third option is the most promising at this time)
+      - try having case 1 go halfway up (say, -40) and then have case 2 go up the rest of the way (another -40 units)
+          this would test 1.) do we make it to case 2? and 2.) does setReference add rotations (-40 + -40 = -80, or 
+          roughly horizontal?), or go to a specified number of rotations?
+      - try r_arm_pid.SetReference(0, ControlType::kPosition)
+      - try r_arm_pid.SetReference(-arm_place, ControlType::kPosition) (this would test if SetReference just adds or 
+          subtracts rotations and, thus, would take the arm back to the starting position)
+    */
+
+      //The following lines were taken from TestInit and they run the arm to the hard stop
+      //So maybe don't try that again
+      /*
+      r_arm_encoder.SetPosition(0);
+      while(r_arm_encoder.GetPosition() > -5) {
+        r_arm.Set(-0.1);
+      }
+      */
+
   switch(auto_state) {
     case 0:
       /*
@@ -159,109 +184,29 @@ void Robot::AutonomousPeriodic() {
       /*If I need to get the position that a motor is currently in, I can do so by using its built-in encoder.
       The GetPosition() command returns how many rotations the MOTOR has rotated from the 0 point.*/
       if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
-        // arm_place = 0;
         auto_state++;
       }
       
       break;
 
     case 2:
+      //Set reference value for PID 
+      r_arm_pid.SetReference(-30.0, ControlType::kPosition);
 
-    /*
-      Ideas: (I think the third option is the most promising at this time)
-      - try having case 1 go halfway up (say, -40) and then have case 2 go up the rest of the way (another -40 units)
-          this would test 1.) do we make it to case 2? and 2.) does setReference add rotations (-40 + -40 = -80, or 
-          roughly horizontal?), or go to a specified number of rotations?
-      - try r_arm_pid.SetReference(0, ControlType::kPosition)
-      - try r_arm_pid.SetReference(-arm_place, ControlType::kPosition) (this would test if SetReference just adds or 
-          subtracts rotations and, thus, would take the arm back to the starting position)
-    */
-
-      //The following lines were taken from TestInit and they run the arm to the hard stop
-      //So maybe don't try that again
-      /*
-      r_arm_encoder.SetPosition(0);
-      while(r_arm_encoder.GetPosition() > -5) {
-        r_arm.Set(-0.1);
+      //If the encoder position reads between -35 and -25, then increment the auto_state (go to case 3)
+      if(r_arm_encoder.GetPosition() > -35 && r_arm_encoder.GetPosition() < -25) {
+        auto_state++;
       }
-      */
-
-      // r_arm_pid.SetReference(arm_place, ControlType::kPosition);
-
-      // if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
-      //   arm_place = -75;
-      //   auto_state--;
-      // }
-      
-      // r_extension_pid.SetReference(extension_place, ControlType::kPosition);
-      // if(abs(r_extension_encoder.GetPosition() - extension_place) < 1) {
-      //   auto_state++;
-      // }
       break;
 
     case 3:
-      if(r_auto_mode.GetSelected() == "Charge Station") {
-        auto_state++;
-      }
-      r_arm_pid.SetReference(-72, ControlType::kPosition);
-      if(abs(r_arm_encoder.GetPosition() + 72) < 1) {
-        auto_state++;
-      }
-      break;
+      
+      /* 
+        Do nothing and wait for autonomous portion to time out or be disabled.
+        We will implement a loop with some sort of sleep timer (to avoid rapid shuffling of arm) after we figure
+        out how to reliably make the arm go up and down.
+      */
 
-    case 4:
-      grabber_open();
-      if(timer1.Get() == 0_s) {
-        timer1.Start();
-      }
-      if(timer1.Get() > 0.5_s) {
-        auto_state++;
-      }
-      break;
-    
-    case 5:
-      r_extension_pid.SetReference(0, ControlType::kPosition);
-      if(r_extension_encoder.GetPosition() > -20) {
-        r_arm_pid.SetReference(0, ControlType::kPosition);
-      }
-
-      if((r_left_encoder.GetPosition() < charge_back && r_auto_mode.GetSelected() == "Charge Station")
-      || (r_left_encoder.GetPosition() < full_back && r_auto_mode.GetSelected() == "No Charge Station")) {
-        r_left_front.Set(drive_speed);
-        r_right_front.Set(drive_speed);
-      }
-      else {
-        r_left_front.Set(0);
-        r_right_front.Set(0);
-        if(r_auto_mode.GetSelected() == "Charge Station") {
-          auto_state++;
-        }
-      }
-      break;
-    
-    case 6:
-      if(r_extension_encoder.GetPosition() > -20) {
-        r_arm_pid.SetReference(0, ControlType::kPosition);
-      }
-
-      if(r_gyro.GetAngle() < -balance_zone && abs(double(r_gyro.GetRate())) < balance_rate) {
-        r_left_front.Set(balance_speed);
-        r_right_front.Set(balance_speed);
-        left_hold = 0;
-      }
-      else if(r_gyro.GetAngle() > balance_zone && abs(double(r_gyro.GetRate())) < balance_rate) {
-        r_left_front.Set(-balance_speed);
-        r_right_front.Set(-balance_speed);
-        left_hold = 0;
-      }
-      else {
-        if(left_hold == 0) {
-          left_hold = r_left_encoder.GetPosition();
-          right_hold = r_right_encoder.GetPosition();
-        }
-        r_left_pid.SetReference(left_hold, ControlType::kPosition);
-        r_right_pid.SetReference(right_hold, ControlType::kPosition);
-      }
       break;
   }
 }
