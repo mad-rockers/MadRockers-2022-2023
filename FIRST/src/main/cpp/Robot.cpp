@@ -59,6 +59,7 @@ void Robot::RobotPeriodic() {
   SmartDashboard::PutNumber("Extension", r_extension_encoder.GetPosition());
   SmartDashboard::PutNumber("Gyro Angle", double(r_gyro.GetAngle()));
   SmartDashboard::PutNumber("Gyro Rate", double(r_gyro.GetRate()));
+  //SmartDashboard::PutNumber("Gyro Rate", double(arm_limit_high.Get()));
 }
 
 //This code only runs once at the beginning of autonomous
@@ -80,20 +81,17 @@ void Robot::AutonomousPeriodic() {
   This section is just dedicated to initializing some variables for how the auto code will run.
   The benefit of putting the settings up here is that they are easy and fast to tweak.
   */
-  double arm_place;
+  double arm_place_high;
+  double arm_place_low;
   double extension_place;
   double initial_back;
-  if(r_auto_mode.GetSelected() == "Charge Station" && auto_state == 0) {
-    arm_place = -75;
-    extension_place = -280;
-    initial_back = 0;
-  }
-  else if (auto_state == 0) {
-    arm_place = -80;
-    extension_place = -300;
-    // initial_back = 1;
-    initial_back = 0;
-  }
+  
+  
+  arm_place_high= -75;
+  arm_place_low = -25;
+  extension_place = -280;
+  initial_back = 0;
+
   double drive_speed = 0.4;
   double full_back = 75;
   double charge_back = 38;
@@ -133,64 +131,43 @@ void Robot::AutonomousPeriodic() {
       The way I told the robot which auto to run was by putting a selector in Shuffleboard.
       r_auto_mode is the selector and I can get which option is selected by using the GetSelected() command.
       */
-      if(r_auto_mode.GetSelected() == "No Charge Station") {
-        grabber_close_high();
-      }
 
       /*
       The second way that a motor can be run is by directly setting it to a power with the Set() command.
       The command takes a power from -1 to 1.
       */
-      r_left_front.Set(drive_speed);
-      r_right_front.Set(drive_speed);
-      if(r_left_encoder.GetPosition() >= initial_back) {
-        r_left_front.Set(0);
-        r_right_front.Set(0);
 
         /*
         At some point in the auto step is a trigger to go to the next step.
         After auto_state is incremented, this case statement will no longer run with each loop and instead the next one will run.*/
-        auto_state++;
-      }
+      auto_state++;
+      
       break;
     
     case 1:
-      r_arm_pid.SetReference(arm_place, ControlType::kPosition);
+      r_arm_pid.SetReference(arm_place_high, ControlType::kPosition);
 
       /*If I need to get the position that a motor is currently in, I can do so by using its built-in encoder.
       The GetPosition() command returns how many rotations the MOTOR has rotated from the 0 point.*/
-      if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
+      if(abs(r_arm_encoder.GetPosition() - arm_place_high) < 2) {
         // arm_place = 0;
         auto_state++;
+        
       }
       // std::cout << "Encoder Poisition: " << r_arm_encoder.GetPosition() << std::endl;
       // std:: cout << "Current State: " << auto_state << std::endl;
       break;
 
     case 2:
+      r_arm_pid.SetReference(arm_place_low, ControlType::kPosition);
 
-      //The following lines were taken from testInit and they run the arm to the hard stop
-      //So don't try it
-      ////////////////////////////////////////////////////////////////////////
-      // r_arm_encoder.SetPosition(0);
-      // while(r_arm_encoder.GetPosition() > -5) {
-      //   r_arm.Set(-0.1);
-      // }
-      ////////////////////////////////////////////////////////////////////////
-      // r_arm_pid.SetReference(arm_place, ControlType::kPosition);
-
-      // if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
-      //   arm_place = -75;
-      //   auto_state--;
-      // }
-      std::cout << "Encoder Poisition: " << r_arm_encoder.GetPosition() << std::endl;
-      std:: cout << "Current State: " << auto_state << std::endl;
-      
-
-      // r_extension_pid.SetReference(extension_place, ControlType::kPosition);
-      // if(abs(r_extension_encoder.GetPosition() - extension_place) < 1) {
-      //   auto_state++;
-      // }
+      /*If I need to get the position that a motor is currently in, I can do so by using its built-in encoder.
+      The GetPosition() command returns how many rotations the MOTOR has rotated from the 0 point.*/
+      if(abs(r_arm_encoder.GetPosition() - arm_place_low) < 2) {
+        // arm_place = 0;
+        //auto_state++;
+        break;
+      }
       break;
 
     case 3:
