@@ -5,7 +5,6 @@
 #include "Robot.h"
 
 #include <fmt/core.h>
-#include <iostream>
 
 #include <frc/smartdashboard/SmartDashboard.h>
 #include <cameraserver/CameraServer.h>
@@ -163,30 +162,37 @@ void Robot::AutonomousPeriodic() {
         // arm_place = 0;
         auto_state++;
       }
-      // std::cout << "Encoder Poisition: " << r_arm_encoder.GetPosition() << std::endl;
-      // std:: cout << "Current State: " << auto_state << std::endl;
+      
       break;
 
     case 2:
 
-      //The following lines were taken from testInit and they run the arm to the hard stop
-      //So don't try it
-      ////////////////////////////////////////////////////////////////////////
-      // r_arm_encoder.SetPosition(0);
-      // while(r_arm_encoder.GetPosition() > -5) {
-      //   r_arm.Set(-0.1);
-      // }
-      ////////////////////////////////////////////////////////////////////////
+    /*
+      Ideas: (I think the third option is the most promising at this time)
+      - try having case 1 go halfway up (say, -40) and then have case 2 go up the rest of the way (another -40 units)
+          this would test 1.) do we make it to case 2? and 2.) does setReference add rotations (-40 + -40 = -80, or 
+          roughly horizontal?), or go to a specified number of rotations?
+      - try r_arm_pid.SetReference(0, ControlType::kPosition)
+      - try r_arm_pid.SetReference(-arm_place, ControlType::kPosition) (this would test if SetReference just adds or 
+          subtracts rotations and, thus, would take the arm back to the starting position)
+    */
+
+      //The following lines were taken from TestInit and they run the arm to the hard stop
+      //So maybe don't try that again
+      /*
+      r_arm_encoder.SetPosition(0);
+      while(r_arm_encoder.GetPosition() > -5) {
+        r_arm.Set(-0.1);
+      }
+      */
+
       // r_arm_pid.SetReference(arm_place, ControlType::kPosition);
 
       // if(abs(r_arm_encoder.GetPosition() - arm_place) < 2) {
       //   arm_place = -75;
       //   auto_state--;
       // }
-      std::cout << "Encoder Poisition: " << r_arm_encoder.GetPosition() << std::endl;
-      std:: cout << "Current State: " << auto_state << std::endl;
       
-
       // r_extension_pid.SetReference(extension_place, ControlType::kPosition);
       // if(abs(r_extension_encoder.GetPosition() - extension_place) < 1) {
       //   auto_state++;
